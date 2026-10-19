@@ -1,0 +1,15 @@
+<%= tag.div id: dom_id(note_pad),
+    class: "border border-green-800 hover:border-green-400 px-4 py-3 flex items-center justify-between transition" do %>
+  <%= link_to note_pad_path(note_pad), class: "flex-1" do %>
+    <div class="text-lg"><%= note_pad.title.presence || "UNTITLED" %></div>
+    <div class="text-xs text-green-700">
+      updated <%= time_ago_in_words(note_pad.updated_at) %> ago
+    </div>
+  <% end %>
+
+  <%= button_to note_pad_path(note_pad), method: :delete,
+      form: { data: { turbo_confirm: "Delete this pad?" } },
+      class: "text-red-500 border border-red-800 px-2 py-1 text-xs cursor-pointer hover:bg-red-900" do %>
+    ✕
+  <% end %>
+<% end %>

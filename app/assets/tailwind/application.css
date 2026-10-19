@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+/* CRT "phosphor bleed" glow, applied once on page containers */
+.crt-glow {
+  text-shadow: 0 0 4px rgba(0, 255, 65, 0.6);
+}
+
+/* legal-pad ruled lines; background-attachment: local keeps the lines
+   attached to the text when the textarea scrolls */
+.ruled-lines {
+  line-height: 32px;
+  background-image: repeating-linear-gradient(
+    to bottom, transparent, transparent 31px, rgba(0, 255, 65, 0.25) 32px
+  );
+  background-attachment: local;
+}

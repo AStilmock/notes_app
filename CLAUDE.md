@@ -1,0 +1,27 @@
+# notes_app
+
+Rails 8.1 / Ruby 3.4.2 / PostgreSQL / Tailwind v4 / Hotwire (Turbo + Stimulus via importmap).
+Run with `bin/dev` (Rails server + Tailwind watcher), tests with `bin/rails test`.
+
+## NotePad (built)
+- `note_pads`: `title` string, not null, default "Untitled"; `body` text; `position` integer, not null, default 0, indexed.
+  `before_create` puts new pads at the end (`max(position) + 1`). List order is `NotePad.ordered`.
+- Routes: `resources :note_pads, only: index/show/create/update/destroy`, root is the index.
+  There is no new/edit page: "+ NEW" POSTs create, which redirects straight into the pad. Show is also the editor.
+- `update` and `destroy` answer with Turbo Streams (`update.turbo_stream.erb` replaces the row, `destroy` removes it).
+- Autosave: `app/javascript/controllers/note_pad_controller.js`. Waits 600ms after typing stops, then PATCHes title and body with fetch (no form submit).
+  Status shows editing/saving/saved/error/offline. `disconnect()` saves any pending edit with `keepalive` so the last keystrokes survive navigation.
+  The `catch` block (offline) is where the planned offline outbox/retry queue plugs in.
+
+## Styling: DOS / CRT / matrix
+- Black background, green `font-mono` text, thin green borders; set on `<body>` in the layout.
+- `.crt-glow` (phosphor text-shadow) goes on page containers, not on each element.
+- `.ruled-lines` makes the legal-pad textarea (32px line-height + gradient, `background-attachment: local`).
+  The title is a big header with a solid 2px bottom border, and no ruled lines.
+- Custom CSS lives in `app/assets/tailwind/application.css`.
+
+## Planned
+- Offline outbox + retry for autosave.
+- Pixel terminal font (VT323 or Share Tech Mono) instead of `font-mono`.
+- Delete confirm styled to match, replacing the browser-native `turbo_confirm` dialog.
+- SpreadSheet feature: follow the same conventions (model + RESTful controller + Turbo Streams + DOS styling).

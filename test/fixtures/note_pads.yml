@@ -1,0 +1,9 @@
+one:
+  title: First pad
+  body: Some text
+  position: 0
+
+two:
+  title: Second pad
+  body: More text
+  position: 1

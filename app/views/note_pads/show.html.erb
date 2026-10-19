@@ -1,0 +1,30 @@
+<% content_for :title, @note_pad.title.presence || "UNTITLED" %>
+
+<div class="min-h-screen p-6 crt-glow"
+     data-controller="note-pad"
+     data-note-pad-url-value="<%= note_pad_path(@note_pad) %>">
+
+  <div class="flex items-center justify-between mb-4">
+    <%= link_to "← BACK", note_pads_path, class: "text-sm text-green-600 hover:text-green-300" %>
+    <span data-note-pad-target="status" class="text-xs text-green-600"></span>
+  </div>
+
+  <div class="border border-green-500 shadow-[0_0_15px_rgba(0,255,65,0.15)]">
+    <input type="text"
+           data-note-pad-target="title"
+           data-action="input->note-pad#scheduleSave"
+           value="<%= @note_pad.title %>"
+           placeholder="UNTITLED"
+           autofocus
+           class="w-full bg-black text-green-300 text-3xl font-bold tracking-wide
+                  px-4 py-4 border-b-2 border-green-500 focus:outline-none
+                  placeholder-green-800" />
+
+    <textarea data-note-pad-target="body"
+              data-action="input->note-pad#scheduleSave"
+              placeholder="type here..."
+              class="ruled-lines w-full bg-black text-green-400 text-lg px-4 py-3 min-h-[70vh]
+                     focus:outline-none placeholder-green-800 resize-none"
+    ><%= @note_pad.body %></textarea>
+  </div>
+</div>
