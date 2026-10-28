@@ -1,16 +1,195 @@
 @import "tailwindcss";
 
-/* CRT "phosphor bleed" glow, applied once on page containers */
-.crt-glow {
-  text-shadow: 0 0 4px rgba(0, 255, 65, 0.6);
+/* Fonts are self-hosted (app/assets/fonts) so they work offline and need no CSP changes.
+   VT323 draws small for its size, so size-adjust scales it up to sit beside normal text. */
+@font-face {
+  font-family: "VT323";
+  src: url("vt323-latin-400-normal.woff2") format("woff2");
+  font-display: swap;
+  size-adjust: 125%;
 }
 
-/* legal-pad ruled lines; background-attachment: local keeps the lines
-   attached to the text when the textarea scrolls */
-.ruled-lines {
-  line-height: 32px;
-  background-image: repeating-linear-gradient(
-    to bottom, transparent, transparent 31px, rgba(0, 255, 65, 0.25) 32px
-  );
-  background-attachment: local;
+@font-face {
+  font-family: "Share Tech Mono";
+  src: url("share-tech-mono-latin-400-normal.woff2") format("woff2");
+  font-display: swap;
+}
+
+@theme {
+  --font-mono: "VT323", ui-monospace, monospace;
+  --font-sheet: "Share Tech Mono", ui-monospace, monospace;
+
+  --color-phosphor-bright: #c4ffd4;
+  --color-phosphor: #3dff72;
+  --color-phosphor-dim: #22b04f;
+  --color-phosphor-faint: #0f5226;
+  --color-screen: #020a04;
+  --color-panel: #04130a;
+  --color-alert: #ff5c5c;
+  --color-alert-faint: #5c1414;
+
+  --animate-blink: blink 1.06s steps(1) infinite;
+
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+}
+
+@layer base {
+  ::selection {
+    background: var(--color-phosphor);
+    color: var(--color-screen);
+    text-shadow: none;
+  }
+
+  :focus-visible {
+    outline: 1px dashed var(--color-phosphor);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* CRT "phosphor bleed" glow, applied once on page containers */
+  .crt-glow {
+    text-shadow: 0 0 4px rgba(61, 255, 114, 0.55), 0 0 12px rgba(61, 255, 114, 0.15);
+  }
+
+  /* goes on <body>: scanlines + vignette overlays that never catch clicks */
+  .crt-screen::before,
+  .crt-screen::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  .crt-screen::before {
+    background: repeating-linear-gradient(
+      to bottom, transparent 0, transparent 2px, rgba(0, 0, 0, 0.18) 3px
+    );
+    animation: crt-flicker 6s infinite;
+  }
+
+  .crt-screen::after {
+    background: radial-gradient(ellipse at center, transparent 60%, rgba(0, 0, 0, 0.55) 100%);
+  }
+
+  @keyframes crt-flicker {
+    0%, 100% { opacity: 1; }
+    47% { opacity: 0.92; }
+    50% { opacity: 1; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .crt-screen::before { animation: none; }
+  }
+
+  /* blinking block cursor after a heading or prompt */
+  .cursor-block::after {
+    content: "█";
+    margin-left: 0.15em;
+    animation: var(--animate-blink);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cursor-block::after { animation: none; }
+  }
+
+  /* DOS button: [ LABEL ], inverse video on hover/focus */
+  .btn-dos {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25em;
+    border: 1px solid var(--color-phosphor-dim);
+    padding: 0.125rem 0.75rem;
+    color: var(--color-phosphor);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: background-color 80ms, color 80ms;
+  }
+
+  .btn-dos::before { content: "["; opacity: 0.6; }
+  .btn-dos::after { content: "]"; opacity: 0.6; }
+
+  .btn-dos:hover,
+  .btn-dos:focus-visible {
+    background: var(--color-phosphor);
+    color: var(--color-screen);
+    text-shadow: none;
+    outline: none;
+  }
+
+  .btn-dos-alert {
+    border-color: var(--color-alert-faint);
+    color: var(--color-alert);
+  }
+
+  .btn-dos-alert:hover,
+  .btn-dos-alert:focus-visible {
+    background: var(--color-alert);
+    color: var(--color-screen);
+  }
+
+  /* bordered panel with its title cut into the top edge: ┌─ TITLE ─────┐ */
+  .panel-dos {
+    position: relative;
+    border: 1px solid var(--color-phosphor-dim);
+    background: color-mix(in srgb, var(--color-screen) 88%, transparent);
+    box-shadow: 0 0 18px rgba(61, 255, 114, 0.08), inset 0 0 24px rgba(61, 255, 114, 0.04);
+  }
+
+  .panel-dos-title {
+    position: absolute;
+    top: 0;
+    left: 1rem;
+    transform: translateY(-55%);
+    padding: 0 0.5rem;
+    background: var(--color-screen);
+    color: var(--color-phosphor-bright);
+    letter-spacing: 0.15em;
+    line-height: 1;
+  }
+
+  /* DOS text field: no box, just a dim underline that lights up on focus */
+  .input-dos {
+    width: 100%;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--color-phosphor-faint);
+    color: var(--color-phosphor-bright);
+    padding: 0.25rem 0;
+    caret-color: var(--color-phosphor);
+  }
+
+  .input-dos:focus {
+    outline: none;
+    border-bottom-color: var(--color-phosphor);
+  }
+
+  .input-dos::placeholder { color: var(--color-phosphor-faint); }
+
+  /* legal-pad ruled lines; background-attachment: local keeps the lines
+     attached to the text when the textarea scrolls */
+  .ruled-lines {
+    line-height: 32px;
+    background-image: repeating-linear-gradient(
+      to bottom, transparent, transparent 31px, color-mix(in srgb, var(--color-phosphor-faint) 80%, transparent) 32px
+    );
+    background-attachment: local;
+  }
+
+  /* DOS-styled replacement for the browser's confirm() */
+  .dialog-dos {
+    margin: auto;
+    background: var(--color-screen);
+    color: var(--color-phosphor);
+    border: 1px double var(--color-phosphor);
+    box-shadow: 0 0 0 3px var(--color-screen), 0 0 0 4px var(--color-phosphor-dim), 0 0 40px rgba(61, 255, 114, 0.2);
+  }
+
+  .dialog-dos::backdrop {
+    background: rgba(0, 0, 0, 0.7);
+  }
 }

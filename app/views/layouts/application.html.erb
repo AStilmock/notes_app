@@ -23,9 +23,11 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="bg-black text-green-400 font-mono">
+  <body class="crt-screen bg-screen text-phosphor font-mono text-lg">
     <main>
       <%= yield %>
     </main>
+
+    <%= render "layouts/confirm_dialog" %>
   </body>
 </html>

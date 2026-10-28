@@ -14,14 +14,19 @@ Run with `bin/dev` (Rails server + Tailwind watcher), tests with `bin/rails test
   The `catch` block (offline) is where the planned offline outbox/retry queue plugs in.
 
 ## Styling: DOS / CRT / matrix
-- Black background, green `font-mono` text, thin green borders; set on `<body>` in the layout.
-- `.crt-glow` (phosphor text-shadow) goes on page containers, not on each element.
+- All custom CSS lives in `app/assets/tailwind/application.css`. Use the `@theme` tokens, not raw Tailwind greens:
+  `phosphor-bright` / `phosphor` / `phosphor-dim` / `phosphor-faint`, `screen` (background), `panel`, `alert` / `alert-faint`.
+- Fonts are self-hosted in `app/assets/fonts`. `font-mono` is VT323 (the whole app, set on `<body>`; `size-adjust` scales it up).
+  `font-sheet` is Share Tech Mono (spreadsheet pages only).
+- `<body class="crt-screen">` adds the scanline and vignette overlays. `.crt-glow` (phosphor text-shadow) goes on page containers, not on each element.
+- Components: `.btn-dos` (`[ LABEL ]`, inverse video on hover; `.btn-dos-alert` for destructive), `.panel-dos` + `.panel-dos-title`
+  (title cut into the top border), `.input-dos`, `.cursor-block` (blinking █), `.dialog-dos`.
 - `.ruled-lines` makes the legal-pad textarea (32px line-height + gradient, `background-attachment: local`).
   The title is a big header with a solid 2px bottom border, and no ruled lines.
-- Custom CSS lives in `app/assets/tailwind/application.css`.
+- `data-turbo-confirm` opens the DOS `<dialog>` (`layouts/_confirm_dialog`, `lib/confirm.js`, Y/N keys) instead of the browser's confirm.
+- `matrix_rain_controller.js`: faint digital rain on a background canvas (index pages only; off under reduced motion, paused when hidden).
+- Animations respect `prefers-reduced-motion`.
 
 ## Planned
 - Offline outbox + retry for autosave.
-- Pixel terminal font (VT323 or Share Tech Mono) instead of `font-mono`.
-- Delete confirm styled to match, replacing the browser-native `turbo_confirm` dialog.
 - SpreadSheet feature: follow the same conventions (model + RESTful controller + Turbo Streams + DOS styling).
