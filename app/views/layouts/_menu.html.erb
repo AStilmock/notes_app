@@ -1,0 +1,37 @@
+<%# DOS-style menu bar. Each item's data-menu-key / data-menu-alt is its keyboard shortcut (menu_controller.js). %>
+<% items = [
+  { label: "NOTES", key: "F1", alt: "n", path: note_pads_path, active: controller_name == "note_pads" }
+] %>
+
+<nav data-controller="menu" data-action="keydown@window->menu#shortcut"
+     class="sticky top-0 z-40 border-b border-phosphor-dim bg-screen crt-glow" aria-label="Main">
+  <div class="flex items-stretch justify-between">
+    <button type="button" data-action="menu#toggle" data-menu-target="toggle"
+            aria-expanded="false" aria-controls="main_menu"
+            class="sm:hidden px-4 min-h-11 text-phosphor-bright hover:bg-phosphor hover:text-screen">
+      ≡ MENU
+    </button>
+
+    <ul id="main_menu" data-menu-target="list"
+        class="hidden sm:flex absolute sm:static top-full inset-x-0 flex-col sm:flex-row
+               bg-screen border-b sm:border-0 border-phosphor-dim">
+      <% items.each do |item| %>
+        <li>
+          <%= link_to item[:path],
+                data: { menu_key: item[:key], menu_alt: item[:alt] },
+                "aria-current": (item[:active] ? "page" : nil),
+                title: "#{item[:key]} or Alt+#{item[:alt].upcase}",
+                class: "flex items-center gap-2 px-4 min-h-11 tracking-widest
+                        #{item[:active] ? 'bg-phosphor text-screen [text-shadow:none]' : 'text-phosphor hover:bg-phosphor-faint'}" do %>
+            <span class="<%= item[:active] ? 'text-screen' : 'text-phosphor-dim' %> text-sm"><%= item[:key] %></span>
+            <%= item[:label] %>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+
+    <div class="flex items-center gap-4 px-4 text-sm text-phosphor-dim">
+      <span class="hidden md:inline">C:\NOTES_APP&gt;</span>
+    </div>
+  </div>
+</nav>

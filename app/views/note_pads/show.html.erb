@@ -1,6 +1,6 @@
 <% content_for :title, @note_pad.title.presence || "UNTITLED" %>
 
-<div class="min-h-screen p-4 sm:p-6 crt-glow"
+<div class="p-4 sm:p-6 crt-glow"
      data-controller="note-pad"
      data-note-pad-url-value="<%= note_pad_path(@note_pad) %>">
 

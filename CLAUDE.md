@@ -13,6 +13,11 @@ Run with `bin/dev` (Rails server + Tailwind watcher), tests with `bin/rails test
   Status shows editing/saving/saved/error/offline. `disconnect()` saves any pending edit with `keepalive` so the last keystrokes survive navigation.
   The `catch` block (offline) is where the planned offline outbox/retry queue plugs in.
 
+## Menu
+- `layouts/_menu.html.erb`, rendered on every page above `<main>`: a sticky DOS menu bar. The active section is in inverse video (`aria-current="page"`).
+- Each item declares its shortcut with `data-menu-key` (F-key) and `data-menu-alt` (Alt+letter). `menu_controller.js` handles them,
+  even while typing, and collapses the menu into `≡ MENU` below `sm:`. Add new sections to the `items` list at the top of the partial.
+
 ## Styling: DOS / CRT / matrix
 - All custom CSS lives in `app/assets/tailwind/application.css`. Use the `@theme` tokens, not raw Tailwind greens:
   `phosphor-bright` / `phosphor` / `phosphor-dim` / `phosphor-faint`, `screen` (background), `panel`, `alert` / `alert-faint`.
