@@ -58,7 +58,7 @@ Goal: the shared look (tokens, fonts, effects) that every later screen uses.
   - `.panel-dos`: thin border with the title cut into the top edge (`┌─ NOTEPADS ─┐` look).
   - Blinking block cursor `█` in place of the `_`.
   - `::selection` in inverse video.
-- [x] **Matrix accent.** A low-opacity "digital rain" `<canvas>` behind the index page only, driven by a Stimulus `matrix_rain_controller.js`. Pause it when the tab is hidden and under reduced motion.
+- [x] ~~**Matrix accent.** Digital rain behind the index page.~~ Dropped: replaced by a plain black CRT screen with a faint green phosphor glow.
 - [x] **Migrate existing views** (`index`, `show`, `_note_pad`) to the new tokens and classes.
 - [x] **Styled delete confirm.** Replace the native `turbo_confirm` with a `<dialog>` styled as a DOS box (`Delete this pad? [Y]es [N]o`). Hook it up with `Turbo.config.forms.confirm = ...` in `application.js`. Y/N keys should work.
 
