@@ -1,11 +1,12 @@
 <%# DOS-style menu bar. Each item's data-menu-key / data-menu-alt is its keyboard shortcut (menu_controller.js). %>
-<% items = [
+<% items = authenticated? ? [
   { label: "NOTES", key: "F1", alt: "n", path: note_pads_path, active: controller_name == "note_pads" }
-] %>
+] : [] %>
 
 <nav data-controller="menu" data-action="keydown@window->menu#shortcut"
      class="sticky top-0 z-40 border-b border-phosphor-dim bg-screen crt-glow" aria-label="Main">
   <div class="flex items-stretch justify-between">
+    <% if items.any? %>
     <button type="button" data-action="menu#toggle" data-menu-target="toggle"
             aria-expanded="false" aria-controls="main_menu"
             class="sm:hidden px-4 min-h-11 text-phosphor-bright hover:bg-phosphor hover:text-screen">
@@ -29,9 +30,18 @@
         </li>
       <% end %>
     </ul>
+    <% else %>
+      <span class="flex items-center px-4 min-h-11 tracking-widest text-phosphor-bright">NOTES_APP</span>
+    <% end %>
 
-    <div class="flex items-center gap-4 px-4 text-sm text-phosphor-dim">
-      <span class="hidden md:inline">C:\NOTES_APP&gt;</span>
+    <div class="flex items-center gap-3 pl-4 text-sm text-phosphor-dim">
+      <% if authenticated? %>
+        <span class="hidden md:inline truncate max-w-[24ch]" title="Signed in">USER: <%= Current.user.email_address %></span>
+        <%= button_to "LOGOUT", session_path, method: :delete, form_class: "flex",
+              class: "px-4 min-h-11 tracking-widest text-phosphor hover:bg-phosphor hover:text-screen cursor-pointer" %>
+      <% else %>
+        <span class="hidden md:inline pr-4">C:\NOTES_APP&gt;</span>
+      <% end %>
     </div>
   </div>
 </nav>

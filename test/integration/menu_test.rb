@@ -1,6 +1,8 @@
 require "test_helper"
 
 class MenuTest < ActionDispatch::IntegrationTest
+  setup { sign_in_as users(:one) }
+
   test "every page has the menu bar with shortcuts" do
     get note_pads_url
     assert_select "nav[data-controller=menu]" do
@@ -11,5 +13,17 @@ class MenuTest < ActionDispatch::IntegrationTest
   test "the current section is marked active" do
     get note_pad_url(note_pads(:one))
     assert_select "nav a[aria-current=page][href=?]", note_pads_path
+  end
+
+  test "shows the user and a logout button" do
+    get note_pads_url
+    assert_select "nav", text: /one@example.com/
+    assert_select "nav form[action=?] button", session_path, text: "LOGOUT"
+  end
+
+  test "signed out, the menu has no sections" do
+    sign_out
+    get new_session_url
+    assert_select "nav a[data-menu-key]", count: 0
   end
 end

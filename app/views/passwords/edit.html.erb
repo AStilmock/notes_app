@@ -1,0 +1,24 @@
+<% content_for :title, "NEW PASSWORD" %>
+
+<div class="p-4 sm:p-6 crt-glow">
+  <section class="panel-dos mx-auto max-w-md mt-[8vh] px-6 pt-8 pb-6">
+    <h1 class="panel-dos-title">RECOVER.EXE</h1>
+    <p class="text-phosphor-dim mb-6 cursor-block">C:\&gt; SET NEW PASSWORD</p>
+
+    <%= form_with url: password_path(params[:token]), method: :put, class: "grid gap-5" do |form| %>
+      <label class="block">
+        <span class="text-sm text-phosphor-dim tracking-widest">NEW PASSWORD (8+ CHARS):</span>
+        <%= form.password_field :password, required: true, autofocus: true, autocomplete: "new-password",
+              minlength: 8, maxlength: 72, class: "input-dos text-xl" %>
+      </label>
+
+      <label class="block">
+        <span class="text-sm text-phosphor-dim tracking-widest">CONFIRM:</span>
+        <%= form.password_field :password_confirmation, required: true, autocomplete: "new-password", maxlength: 72,
+              class: "input-dos text-xl" %>
+      </label>
+
+      <div class="pt-2"><%= form.button "SAVE", class: "btn-dos" %></div>
+    <% end %>
+  </section>
+</div>

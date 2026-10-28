@@ -3,9 +3,18 @@
 Rails 8.1 / Ruby 3.4.2 / PostgreSQL / Tailwind v4 / Hotwire (Turbo + Stimulus via importmap).
 Run with `bin/dev` (Rails server + Tailwind watcher), tests with `bin/rails test`.
 
+## Users + logins (built)
+- Rails 8 authentication generator: `User` (email + `has_secure_password`, 8+ char passwords), `Session`, `Current`, `Authentication` concern
+  (login required by default; opt out with `allow_unauthenticated_access`). Sign-up is `RegistrationsController` (`resource :registration`).
+- Everything belongs to a user. Controllers always query through `Current.user.<things>`, so another user's record is a 404.
+- `request_authentication` redirects page loads to the login page, but answers background requests that don't accept HTML
+  (autosave fetches) with **401**, so the JS can react instead of silently "saving" to a login page.
+- Dev mail (password resets) opens in the browser via `letter_opener`.
+- Tests: `sign_in_as(users(:one))` / `sign_out` (test/test_helpers/session_test_helper.rb). Fixture password is "password".
+
 ## NotePad (built)
-- `note_pads`: `title` string, not null, default "Untitled"; `body` text; `position` integer, not null, default 0, indexed.
-  `before_create` puts new pads at the end (`max(position) + 1`). List order is `NotePad.ordered`.
+- `note_pads`: `user_id` (not null, FK); `title` string, not null, default "Untitled"; `body` text; `position` integer, not null, default 0.
+  `before_create` puts new pads at the end of the owner's list (`max(position) + 1`). List order is `NotePad.ordered`.
 - Routes: `resources :note_pads, only: index/show/create/update/destroy`, root is the index.
   There is no new/edit page: "+ NEW" POSTs create, which redirects straight into the pad. Show is also the editor.
 - `update` and `destroy` answer with Turbo Streams (`update.turbo_stream.erb` replaces the row, `destroy` removes it).

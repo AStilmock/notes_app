@@ -2,7 +2,7 @@ class NotePadsController < ApplicationController
   before_action :set_note_pad, only: %i[show update destroy]
 
   def index
-    @note_pads = NotePad.ordered
+    @note_pads = Current.user.note_pads.ordered
   end
 
   def show
@@ -10,7 +10,7 @@ class NotePadsController < ApplicationController
 
   # "+ NEW" creates a blank pad and drops you straight into it
   def create
-    @note_pad = NotePad.create!
+    @note_pad = Current.user.note_pads.create!
     redirect_to @note_pad
   end
 
@@ -36,8 +36,9 @@ class NotePadsController < ApplicationController
 
   private
 
+  # scoped to the signed-in user, so another user's pad is a 404
   def set_note_pad
-    @note_pad = NotePad.find(params[:id])
+    @note_pad = Current.user.note_pads.find(params[:id])
   end
 
   def note_pad_params
