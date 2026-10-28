@@ -50,6 +50,9 @@ Run with `bin/dev` (Rails server + Tailwind watcher), tests with `bin/rails test
 - `data-turbo-confirm` opens the DOS `<dialog>` (`layouts/_confirm_dialog`, `lib/confirm.js`, Y/N keys) instead of the browser's confirm.
 - `matrix_rain_controller.js`: faint digital rain on a background canvas (index pages only; off under reduced motion, paused when hidden).
 - Animations respect `prefers-reduced-motion`.
+- Contrast: every text color is WCAG AA on `screen` (dim is 7:1, muted 4.8:1). `phosphor-faint` (2.2:1) is for borders only, never text;
+  use `phosphor-muted` for placeholders.
+- Icons: `public/icon.svg` (favicon), `icon-192/512.png` + `icon-maskable-512.png` (PWA), `apple-touch-icon.png` (180px, iOS).
 
 ## Planned
 - Offline outbox + retry for autosave.

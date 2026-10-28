@@ -22,7 +22,8 @@
   --color-phosphor-bright: #c4ffd4;
   --color-phosphor: #3dff72;
   --color-phosphor-dim: #22b04f;
-  --color-phosphor-faint: #0f5226;
+  --color-phosphor-muted: #1a8f40; /* placeholders: still 4.5:1 on screen */
+  --color-phosphor-faint: #0f5226; /* borders and rules only, too dim for text */
   --color-screen: #020a04;
   --color-panel: #04130a;
   --color-alert: #ff5c5c;
@@ -136,7 +137,7 @@
   .panel-dos {
     position: relative;
     border: 1px solid var(--color-phosphor-dim);
-    background: color-mix(in srgb, var(--color-screen) 88%, transparent);
+    background: color-mix(in srgb, var(--color-screen) 94%, transparent);
     box-shadow: 0 0 18px rgba(61, 255, 114, 0.08), inset 0 0 24px rgba(61, 255, 114, 0.04);
   }
 
@@ -168,7 +169,7 @@
     border-bottom-color: var(--color-phosphor);
   }
 
-  .input-dos::placeholder { color: var(--color-phosphor-faint); }
+  .input-dos::placeholder { color: var(--color-phosphor-muted); }
 
   /* legal-pad ruled lines; background-attachment: local keeps the lines
      attached to the text when the textarea scrolls */
