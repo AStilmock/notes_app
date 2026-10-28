@@ -1,0 +1,20 @@
+<%= tag.div id: dom_id(spread_sheet),
+    class: "group flex items-center justify-between gap-3 border border-transparent px-3 py-2
+            hover:border-phosphor-dim focus-within:border-phosphor-dim transition" do %>
+  <%= link_to spread_sheet_path(spread_sheet), class: "flex-1 min-w-0 focus-visible:outline-none" do %>
+    <div class="text-lg text-phosphor-bright truncate">
+      <span class="text-phosphor-dim group-hover:text-phosphor">►</span>
+      <%= spread_sheet.title.presence || "UNTITLED" %>
+    </div>
+    <div class="text-sm text-phosphor-dim pl-5">
+      <%= spread_sheet.row_count %> × <%= spread_sheet.col_count %> ·
+      updated <%= time_ago_in_words(spread_sheet.updated_at) %> ago
+    </div>
+  <% end %>
+
+  <%= button_to spread_sheet_path(spread_sheet), method: :delete,
+      form: { data: { turbo_confirm: "Delete this sheet?" } },
+      class: "btn-dos btn-dos-alert text-sm", "aria-label": "Delete #{spread_sheet.title}" do %>
+    DEL
+  <% end %>
+<% end %>

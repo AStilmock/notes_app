@@ -193,3 +193,45 @@
     background: rgba(0, 0, 0, 0.7);
   }
 }
+
+@layer components {
+  /* spreadsheet grid (spread_sheet_controller.js draws the cells) */
+  .sheet-grid {
+    border-collapse: collapse;
+    font-size: 1rem;
+  }
+
+  .sheet-grid th {
+    min-width: 2.5rem;
+    padding: 0.125rem 0.5rem;
+    border: 1px solid var(--color-phosphor-faint);
+    color: var(--color-phosphor-dim);
+    font-weight: normal;
+    text-align: center;
+  }
+
+  .sheet-grid th[data-active] {
+    background: var(--color-phosphor-faint);
+    color: var(--color-phosphor-bright);
+  }
+
+  .sheet-grid td {
+    border: 1px solid var(--color-phosphor-faint);
+    padding: 0;
+  }
+
+  .sheet-grid input {
+    width: 9rem;
+    padding: 0.25rem 0.5rem;
+    background: transparent;
+    color: var(--color-phosphor);
+    caret-color: var(--color-phosphor-bright);
+  }
+
+  .sheet-grid input:focus {
+    outline: 1px solid var(--color-phosphor);
+    outline-offset: -1px;
+    background: color-mix(in srgb, var(--color-phosphor) 14%, transparent);
+    color: var(--color-phosphor-bright);
+  }
+}

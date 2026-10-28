@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_28_221245) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_28_230000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -34,6 +34,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_28_221245) do
     t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 
+  create_table "spread_sheets", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "title", default: "Untitled", null: false
+    t.jsonb "cells", default: [["", "", ""], ["", "", ""], ["", "", ""]], null: false
+    t.integer "position", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "position"], name: "index_spread_sheets_on_user_id_and_position"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email_address", null: false
     t.string "password_digest", null: false
@@ -44,4 +54,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_28_221245) do
 
   add_foreign_key "note_pads", "users"
   add_foreign_key "sessions", "users"
+  add_foreign_key "spread_sheets", "users"
 end

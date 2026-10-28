@@ -1,0 +1,41 @@
+<% content_for :title, @spread_sheet.title.presence || "UNTITLED" %>
+
+<div class="p-4 sm:p-6 crt-glow font-sheet"
+     data-controller="spread-sheet"
+     data-spread-sheet-url-value="<%= spread_sheet_path(@spread_sheet) %>"
+     data-spread-sheet-cells-value="<%= @spread_sheet.cells.to_json %>"
+     data-spread-sheet-max-rows-value="<%= SpreadSheet::MAX_ROWS %>"
+     data-spread-sheet-max-cols-value="<%= SpreadSheet::MAX_COLS %>">
+
+  <div class="flex items-center justify-between mb-6">
+    <%= link_to "◄ BACK", spread_sheets_path, class: "text-phosphor-dim hover:text-phosphor-bright" %>
+    <span data-spread-sheet-target="status" class="text-sm text-phosphor-dim uppercase tracking-widest"></span>
+  </div>
+
+  <div class="panel-dos">
+    <input type="text"
+           data-spread-sheet-target="title"
+           data-action="input->spread-sheet#scheduleSave"
+           value="<%= @spread_sheet.title %>"
+           placeholder="UNTITLED"
+           aria-label="Title"
+           class="w-full bg-transparent text-phosphor-bright text-3xl tracking-wide
+                  px-4 py-4 border-b-2 border-phosphor-dim focus:outline-none focus:border-phosphor
+                  placeholder-phosphor-faint" />
+
+    <div class="flex flex-wrap items-center gap-2 px-4 py-3 border-b border-phosphor-faint text-sm">
+      <button type="button" class="btn-dos text-sm" data-action="spread-sheet#addRow">+ ROW</button>
+      <button type="button" class="btn-dos text-sm" data-action="spread-sheet#addColumn">+ COL</button>
+      <button type="button" class="btn-dos btn-dos-alert text-sm" data-action="spread-sheet#removeRow">− ROW</button>
+      <button type="button" class="btn-dos btn-dos-alert text-sm" data-action="spread-sheet#removeColumn">− COL</button>
+      <span class="ml-auto hidden sm:inline text-phosphor-dim">
+        ARROWS / ENTER move · − removes the selected row/col
+      </span>
+    </div>
+
+    <%# the grid is drawn by spread_sheet_controller.js from the cells value %>
+    <div class="overflow-x-auto p-4">
+      <table data-spread-sheet-target="grid" class="sheet-grid"></table>
+    </div>
+  </div>
+</div>

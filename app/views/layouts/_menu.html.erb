@@ -1,6 +1,7 @@
 <%# DOS-style menu bar. Each item's data-menu-key / data-menu-alt is its keyboard shortcut (menu_controller.js). %>
 <% items = authenticated? ? [
-  { label: "NOTES", key: "F1", alt: "n", path: note_pads_path, active: controller_name == "note_pads" }
+  { label: "NOTES", key: "F1", alt: "n", path: note_pads_path, active: controller_name == "note_pads" },
+  { label: "SHEETS", key: "F2", alt: "s", path: spread_sheets_path, active: controller_name == "spread_sheets" }
 ] : [] %>
 
 <nav data-controller="menu" data-action="keydown@window->menu#shortcut"

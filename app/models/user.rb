@@ -2,6 +2,7 @@ class User < ApplicationRecord
   has_secure_password
   has_many :sessions, dependent: :destroy
   has_many :note_pads, dependent: :destroy
+  has_many :spread_sheets, dependent: :destroy
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
 

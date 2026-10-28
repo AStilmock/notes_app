@@ -7,12 +7,16 @@ class MenuTest < ActionDispatch::IntegrationTest
     get note_pads_url
     assert_select "nav[data-controller=menu]" do
       assert_select "a[data-menu-key=F1][data-menu-alt=n][href=?]", note_pads_path
+      assert_select "a[data-menu-key=F2][data-menu-alt=s][href=?]", spread_sheets_path
     end
   end
 
   test "the current section is marked active" do
     get note_pad_url(note_pads(:one))
     assert_select "nav a[aria-current=page][href=?]", note_pads_path
+
+    get spread_sheet_url(spread_sheets(:one))
+    assert_select "nav a[aria-current=page][href=?]", spread_sheets_path
   end
 
   test "shows the user and a logout button" do
