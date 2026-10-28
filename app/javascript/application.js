@@ -4,3 +4,7 @@ import "controllers"
 import { confirmDialog } from "lib/confirm"
 
 Turbo.config.forms.confirm = confirmDialog
+
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/service-worker.js", { scope: "/" })
+}

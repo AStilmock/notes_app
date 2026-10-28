@@ -1,7 +1,9 @@
 <% content_for :title, "LOGIN" %>
 
 <div class="p-4 sm:p-6 crt-glow">
-  <section class="panel-dos mx-auto max-w-md mt-[8vh] px-6 pt-8 pb-6">
+  <%# signed out: drop any cached pages so the next person on this device can't read them offline %>
+  <section class="panel-dos mx-auto max-w-md mt-[8vh] px-6 pt-8 pb-6"
+           data-controller="offline-cache" data-offline-cache-clear-on-connect-value="true">
     <h1 class="panel-dos-title">LOGIN.EXE</h1>
     <p class="text-phosphor-dim mb-6 cursor-block">C:\&gt; AUTHENTICATE</p>
 

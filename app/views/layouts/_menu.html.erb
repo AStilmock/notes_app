@@ -5,7 +5,7 @@
 ] : [] %>
 
 <nav data-controller="menu" data-action="keydown@window->menu#shortcut"
-     class="sticky top-0 z-40 border-b border-phosphor-dim bg-screen crt-glow" aria-label="Main">
+     class="sticky top-0 z-40 border-b border-phosphor-dim bg-screen crt-glow pt-[env(safe-area-inset-top)]" aria-label="Main">
   <div class="flex items-stretch justify-between">
     <% if items.any? %>
     <button type="button" data-action="menu#toggle" data-menu-target="toggle"
@@ -39,6 +39,7 @@
       <% if authenticated? %>
         <span class="hidden md:inline truncate max-w-[24ch]" title="Signed in">USER: <%= Current.user.email_address %></span>
         <%= button_to "LOGOUT", session_path, method: :delete, form_class: "flex",
+              form: { data: { controller: "offline-cache", action: "submit->offline-cache#clear" } },
               class: "px-4 min-h-11 tracking-widest text-phosphor hover:bg-phosphor hover:text-screen cursor-pointer" %>
       <% else %>
         <span class="hidden md:inline pr-4">C:\NOTES_APP&gt;</span>

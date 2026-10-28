@@ -20,6 +20,13 @@ export default class extends Controller {
       url: this.urlValue,
       delay: this.debounceValue,
       status: this.hasStatusTarget ? this.statusTarget : null,
+      restore: (fields) => {
+        this.titleTarget.value = fields["spread_sheet[title]"] ?? this.titleTarget.value
+        if (fields["spread_sheet[cells]"]) {
+          this.cells = JSON.parse(fields["spread_sheet[cells]"])
+          this.render()
+        }
+      },
       body: () => {
         const body = new FormData()
         body.append("spread_sheet[title]", this.titleTarget.value)
@@ -31,7 +38,7 @@ export default class extends Controller {
   }
 
   disconnect() {
-    this.autosave.flush()
+    this.autosave.disconnect()
   }
 
   scheduleSave() {

@@ -37,6 +37,17 @@ Run with `bin/dev` (Rails server + Tailwind watcher), tests with `bin/rails test
 - Each item declares its shortcut with `data-menu-key` (F-key) and `data-menu-alt` (Alt+letter). `menu_controller.js` handles them,
   even while typing, and collapses the menu into `≡ MENU` below `sm:`. Add new sections to the `items` list at the top of the partial.
 
+## PWA + offline (built)
+- Installable: `/manifest.json` and `/service-worker.js` (Rails `rails/pwa` routes, views in `app/views/pwa/`), icons in `public/`,
+  iOS meta tags + `viewport-fit=cover` with `env(safe-area-inset-*)` padding on `<body>` and the menu.
+- Service worker (`service-worker.js.erb`): cache-first for `/assets/*` + icons (shell precached, versioned by asset digests);
+  network-first for pages (full loads and Turbo visits) with a cached fallback; never caches `/session`, `/passwords`, `/registration`
+  or redirected responses.
+- Offline outbox (`lib/outbox.js` IndexedDB + `lib/autosave.js`): a failed save is queued (one entry per URL, latest wins) and
+  replayed on `online` and every `turbo:load`. A 401 queues the edit and sends the user to log in; it syncs after. An editor
+  that opens with a queued edit for its URL restores it via `restore(fields)`, so a stale cached page can't overwrite offline typing.
+- `offline_cache_controller.js` deletes cached pages on logout and on the login page (queued edits are kept).
+
 ## Styling: DOS / CRT / matrix
 - All custom CSS lives in `app/assets/tailwind/application.css`. Use the `@theme` tokens, not raw Tailwind greens:
   `phosphor-bright` / `phosphor` / `phosphor-dim` / `phosphor-faint`, `screen` (background), `panel`, `alert` / `alert-faint`.
@@ -55,4 +66,4 @@ Run with `bin/dev` (Rails server + Tailwind watcher), tests with `bin/rails test
 - Icons: `public/icon.svg` (favicon), `icon-192/512.png` + `icon-maskable-512.png` (PWA), `apple-touch-icon.png` (180px, iOS).
 
 ## Planned
-- Offline outbox + retry for autosave.
+- See PLAN.md: Django port (step 7), deploy + install on the phone (step 8), then the Rails → Django porting workflow.

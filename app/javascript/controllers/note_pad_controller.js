@@ -11,6 +11,10 @@ export default class extends Controller {
       url: this.urlValue,
       delay: this.debounceValue,
       status: this.hasStatusTarget ? this.statusTarget : null,
+      restore: (fields) => {
+        this.titleTarget.value = fields["note_pad[title]"] ?? this.titleTarget.value
+        this.bodyTarget.value = fields["note_pad[body]"] ?? this.bodyTarget.value
+      },
       body: () => {
         const body = new FormData()
         body.append("note_pad[title]", this.titleTarget.value)
@@ -22,7 +26,7 @@ export default class extends Controller {
 
   // flush any pending edit if the user navigates away mid-type
   disconnect() {
-    this.autosave.flush()
+    this.autosave.disconnect()
   }
 
   // called by data-action on input events for both title and body
