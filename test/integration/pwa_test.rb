@@ -7,7 +7,7 @@ class PwaTest < ActionDispatch::IntegrationTest
 
     manifest = response.parsed_body
     assert_equal "standalone", manifest["display"]
-    assert_equal "#020a04", manifest["theme_color"]
+    assert_equal "#000000", manifest["theme_color"]
     manifest["icons"].each { |icon| assert File.exist?(Rails.public_path.join(icon["src"].delete_prefix("/"))), icon["src"] }
     assert manifest["icons"].any? { |icon| icon["purpose"] == "maskable" }
   end

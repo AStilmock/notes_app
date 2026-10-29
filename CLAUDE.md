@@ -49,19 +49,25 @@ Run with `bin/dev` (Rails server + Tailwind watcher), tests with `bin/rails test
 - `offline_cache_controller.js` deletes cached pages on logout and on the login page (queued edits are kept).
 
 ## Styling: DOS / CRT
-- All custom CSS lives in `app/assets/tailwind/application.css`. Use the `@theme` tokens, not raw Tailwind greens:
-  `phosphor-bright` / `phosphor` / `phosphor-dim` / `phosphor-faint`, `screen` (background), `panel`, `alert` / `alert-faint`.
+- Look is modeled on an old CRT terminal photo: pale **blue** glowing text on deep black glass, framed by a thick **green** outline.
+- All custom CSS lives in `app/assets/tailwind/application.css`. Use the `@theme` tokens, not raw Tailwind colors:
+  - text: `ink-bright` / `ink` / `ink-dim` / `ink-muted` (placeholders), all WCAG AA on `screen`
+  - lines, frame and highlights: `frame` (screen outline), `phosphor-bright` / `phosphor` / `phosphor-dim` / `phosphor-faint` (borders only, never text)
+  - `screen` (background), `alert` / `alert-faint`
+  Rule of thumb: text is blue (`text-ink*`), borders and inverse-video highlights are green (`border-phosphor*`, `bg-phosphor`).
 - Fonts are self-hosted in `app/assets/fonts`. `font-mono` is VT323 (the whole app, set on `<body>`; `size-adjust` scales it up).
   `font-sheet` is Share Tech Mono (spreadsheet pages only).
-- `<body class="crt-screen">` is the tube: black with a faint green phosphor glow, plus scanline and vignette overlays. No Matrix rain/animated backgrounds (the user disliked it). `.crt-glow` (phosphor text-shadow) goes on page containers, not on each element.
+- `<body class="crt-screen">` is the glass: black with a faint cool bloom, scanline (`::before`) and film-grain (`::after`) overlays,
+  and padding that keeps content inside the frame. `<div class="crt-frame">` (end of the layout) draws the green outline; its outer
+  shadow is the black bezel, its inset shadows give depth. Sticky bars use `.crt-sticky-top` so they sit inside the frame.
+  No Matrix rain / animated backgrounds (the user disliked it).
+- `.crt-glow` (blue phosphor text-shadow) goes on page containers, not on each element.
 - Components: `.btn-dos` (`[ LABEL ]`, inverse video on hover; `.btn-dos-alert` for destructive), `.panel-dos` + `.panel-dos-title`
   (title cut into the top border), `.input-dos`, `.cursor-block` (blinking █), `.dialog-dos`.
 - `.ruled-lines` makes the legal-pad textarea (32px line-height + gradient, `background-attachment: local`).
   The title is a big header with a solid 2px bottom border, and no ruled lines.
 - `data-turbo-confirm` opens the DOS `<dialog>` (`layouts/_confirm_dialog`, `lib/confirm.js`, Y/N keys) instead of the browser's confirm.
 - Animations respect `prefers-reduced-motion`.
-- Contrast: every text color is WCAG AA on `screen` (dim is 7:1, muted 4.8:1). `phosphor-faint` (2.2:1) is for borders only, never text;
-  use `phosphor-muted` for placeholders.
 - Icons: `public/icon.svg` (favicon), `icon-192/512.png` + `icon-maskable-512.png` (PWA), `apple-touch-icon.png` (180px, iOS).
 
 ## Planned

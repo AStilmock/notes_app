@@ -5,12 +5,12 @@
 ] : [] %>
 
 <nav data-controller="menu" data-action="keydown@window->menu#shortcut"
-     class="sticky top-0 z-40 border-b border-phosphor-dim bg-screen crt-glow pt-[env(safe-area-inset-top)]" aria-label="Main">
+     class="crt-sticky-top z-40 border-b border-phosphor-dim bg-screen crt-glow" aria-label="Main">
   <div class="flex items-stretch justify-between">
     <% if items.any? %>
     <button type="button" data-action="menu#toggle" data-menu-target="toggle"
             aria-expanded="false" aria-controls="main_menu"
-            class="sm:hidden px-4 min-h-11 text-phosphor-bright hover:bg-phosphor hover:text-screen">
+            class="sm:hidden px-4 min-h-11 text-ink-bright hover:bg-phosphor hover:text-screen">
       ≡ MENU
     </button>
 
@@ -24,23 +24,23 @@
                 "aria-current": (item[:active] ? "page" : nil),
                 title: "#{item[:key]} or Alt+#{item[:alt].upcase}",
                 class: "flex items-center gap-2 px-4 min-h-11 tracking-widest
-                        #{item[:active] ? 'bg-phosphor text-screen [text-shadow:none]' : 'text-phosphor hover:bg-phosphor-faint'}" do %>
-            <span class="<%= item[:active] ? 'text-screen' : 'text-phosphor-dim' %> text-sm"><%= item[:key] %></span>
+                        #{item[:active] ? 'bg-phosphor text-screen [text-shadow:none]' : 'text-ink hover:bg-phosphor-faint'}" do %>
+            <span class="<%= item[:active] ? 'text-screen' : 'text-ink-dim' %> text-sm"><%= item[:key] %></span>
             <%= item[:label] %>
           <% end %>
         </li>
       <% end %>
     </ul>
     <% else %>
-      <span class="flex items-center px-4 min-h-11 tracking-widest text-phosphor-bright">NOTES_APP</span>
+      <span class="flex items-center px-4 min-h-11 tracking-widest text-ink-bright">NOTES_APP</span>
     <% end %>
 
-    <div class="flex items-center gap-3 pl-4 text-sm text-phosphor-dim">
+    <div class="flex items-center gap-3 pl-4 text-sm text-ink-dim">
       <% if authenticated? %>
         <span class="hidden md:inline truncate max-w-[24ch]" title="Signed in">USER: <%= Current.user.email_address %></span>
         <%= button_to "LOGOUT", session_path, method: :delete, form_class: "flex",
               form: { data: { controller: "offline-cache", action: "submit->offline-cache#clear" } },
-              class: "px-4 min-h-11 tracking-widest text-phosphor hover:bg-phosphor hover:text-screen cursor-pointer" %>
+              class: "px-4 min-h-11 tracking-widest text-ink hover:bg-phosphor hover:text-screen cursor-pointer" %>
       <% else %>
         <span class="hidden md:inline pr-4">C:\NOTES_APP&gt;</span>
       <% end %>

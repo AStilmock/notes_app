@@ -19,12 +19,20 @@
   --font-mono: "VT323", ui-monospace, monospace;
   --font-sheet: "Share Tech Mono", ui-monospace, monospace;
 
+  /* text: pale phosphor blue (all AA on screen: bright 18:1, ink 13.6:1, dim 7.5:1, muted 4.9:1) */
+  --color-ink-bright: #e6f2ff;
+  --color-ink: #b4d6ff;
+  --color-ink-dim: #7f9fc8;
+  --color-ink-muted: #5f7ea6; /* placeholders */
+
+  /* lines, frame and highlights: green */
+  --color-frame: #5cffa1; /* the outline around the whole screen */
   --color-phosphor-bright: #c4ffd4;
   --color-phosphor: #3dff72;
   --color-phosphor-dim: #22b04f;
-  --color-phosphor-muted: #1a8f40; /* placeholders: still 4.5:1 on screen */
   --color-phosphor-faint: #0f5226; /* borders and rules only, too dim for text */
-  --color-screen: #020a04;
+
+  --color-screen: #030508; /* black glass, a touch cool */
   --color-panel: #04130a;
   --color-alert: #ff5c5c;
   --color-alert-faint: #5c1414;
@@ -52,10 +60,49 @@
 @layer components {
   /* CRT "phosphor bleed" glow, applied once on page containers */
   .crt-glow {
-    text-shadow: 0 0 3px rgba(61, 255, 114, 0.7), 0 0 10px rgba(61, 255, 114, 0.3), 0 0 22px rgba(61, 255, 114, 0.12);
+    text-shadow: 0 0 2px rgba(150, 200, 255, 0.75), 0 0 8px rgba(110, 170, 255, 0.35), 0 0 20px rgba(90, 150, 255, 0.15);
   }
 
-  /* goes on <body>: scanlines + vignette overlays that never catch clicks */
+  /* goes on <body>: the glass (deep black with a faint cool bloom), plus scanline and grain overlays.
+     Body padding keeps content inside the .crt-frame outline. */
+  .crt-screen {
+    --frame-gap: 8px;
+    --frame-width: 4px;
+    --screen-inset: calc(var(--frame-gap) + var(--frame-width));
+
+    padding:
+      calc(var(--screen-inset) + env(safe-area-inset-top))
+      calc(var(--screen-inset) + env(safe-area-inset-right))
+      calc(var(--screen-inset) + env(safe-area-inset-bottom))
+      calc(var(--screen-inset) + env(safe-area-inset-left));
+    background:
+      radial-gradient(ellipse 70% 60% at 62% 55%, rgba(40, 90, 150, 0.11), transparent 70%),
+      radial-gradient(ellipse 90% 80% at 40% 40%, rgba(30, 60, 80, 0.05), transparent 75%),
+      var(--color-screen);
+    background-attachment: fixed;
+  }
+
+  @media (min-width: 640px) {
+    .crt-screen {
+      --frame-gap: 14px;
+      --frame-width: 5px;
+    }
+  }
+
+  /* sticky bars sit just inside the frame, not under it */
+  .crt-sticky-top {
+    position: sticky;
+    top: calc(var(--screen-inset) + env(safe-area-inset-top));
+  }
+
+  .crt-screen::before,
+  .crt-screen::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 100;
+  }
   .crt-screen::before,
   .crt-screen::after {
     content: "";
@@ -72,16 +119,37 @@
     animation: crt-flicker 6s infinite;
   }
 
+  /* film grain: tiled SVG noise */
   .crt-screen::after {
-    background: radial-gradient(ellipse at center, transparent 60%, rgba(0, 0, 0, 0.55) 100%);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
-  /* the tube itself: black glass with a faint green phosphor glow, brightest in the middle */
-  .crt-screen {
-    background:
-      radial-gradient(ellipse 80% 70% at 50% 45%, rgba(61, 255, 114, 0.07), transparent 75%),
-      var(--color-screen);
-    background-attachment: fixed;
+  /* the green outline around the whole screen (an empty div in the layout).
+     Its huge outer shadow is the bezel: it hides anything scrolled outside the frame.
+     The inset shadows give the glass depth: green spill at the edge, darker toward the rim. */
+  .crt-frame {
+    position: fixed;
+    top: calc(var(--frame-gap) + env(safe-area-inset-top));
+    right: calc(var(--frame-gap) + env(safe-area-inset-right));
+    bottom: calc(var(--frame-gap) + env(safe-area-inset-bottom));
+    left: calc(var(--frame-gap) + env(safe-area-inset-left));
+    border: var(--frame-width) solid var(--color-frame);
+    border-radius: 6px;
+    pointer-events: none;
+    z-index: 90;
+    box-shadow:
+      0 0 0 100vmax #000,
+      inset 0 0 10px rgba(92, 255, 161, 0.35),
+      inset 0 0 90px rgba(0, 0, 0, 0.75);
+  }
+
+  /* the frame's glow onto the bezel */
+  .crt-frame::before {
+    content: "";
+    position: absolute;
+    inset: calc(-1 * var(--frame-width));
+    border-radius: inherit;
+    box-shadow: 0 0 16px 1px rgba(92, 255, 161, 0.45);
   }
 
   @keyframes crt-flicker {
@@ -112,7 +180,7 @@
     gap: 0.25em;
     border: 1px solid var(--color-phosphor-dim);
     padding: 0.125rem 0.75rem;
-    color: var(--color-phosphor);
+    color: var(--color-ink);
     text-transform: uppercase;
     letter-spacing: 0.08em;
     cursor: pointer;
@@ -146,7 +214,7 @@
     position: relative;
     border: 1px solid var(--color-phosphor-dim);
     background: color-mix(in srgb, var(--color-screen) 35%, transparent);
-    box-shadow: 0 0 18px rgba(61, 255, 114, 0.08), inset 0 0 24px rgba(61, 255, 114, 0.04);
+    box-shadow: 0 0 14px rgba(61, 255, 114, 0.06);
   }
 
   .panel-dos-title {
@@ -156,7 +224,7 @@
     transform: translateY(-55%);
     padding: 0 0.5rem;
     background: var(--color-screen);
-    color: var(--color-phosphor-bright);
+    color: var(--color-ink-bright);
     letter-spacing: 0.15em;
     line-height: 1;
   }
@@ -167,9 +235,9 @@
     background: transparent;
     border: 0;
     border-bottom: 1px solid var(--color-phosphor-faint);
-    color: var(--color-phosphor-bright);
+    color: var(--color-ink-bright);
     padding: 0.25rem 0;
-    caret-color: var(--color-phosphor);
+    caret-color: var(--color-ink-bright);
   }
 
   .input-dos:focus {
@@ -177,7 +245,7 @@
     border-bottom-color: var(--color-phosphor);
   }
 
-  .input-dos::placeholder { color: var(--color-phosphor-muted); }
+  .input-dos::placeholder { color: var(--color-ink-muted); }
 
   /* legal-pad ruled lines; background-attachment: local keeps the lines
      attached to the text when the textarea scrolls */
@@ -193,8 +261,8 @@
   .dialog-dos {
     margin: auto;
     background: var(--color-screen);
-    color: var(--color-phosphor);
-    border: 1px double var(--color-phosphor);
+    color: var(--color-ink);
+    border: 1px double var(--color-frame);
     box-shadow: 0 0 0 3px var(--color-screen), 0 0 0 4px var(--color-phosphor-dim), 0 0 40px rgba(61, 255, 114, 0.2);
   }
 
@@ -214,14 +282,14 @@
     min-width: 2.5rem;
     padding: 0.125rem 0.5rem;
     border: 1px solid var(--color-phosphor-faint);
-    color: var(--color-phosphor-dim);
+    color: var(--color-ink-dim);
     font-weight: normal;
     text-align: center;
   }
 
   .sheet-grid th[data-active] {
     background: var(--color-phosphor-faint);
-    color: var(--color-phosphor-bright);
+    color: var(--color-ink-bright);
   }
 
   .sheet-grid td {
@@ -233,14 +301,14 @@
     width: 9rem;
     padding: 0.25rem 0.5rem;
     background: transparent;
-    color: var(--color-phosphor);
-    caret-color: var(--color-phosphor-bright);
+    color: var(--color-ink);
+    caret-color: var(--color-ink-bright);
   }
 
   .sheet-grid input:focus {
     outline: 1px solid var(--color-phosphor);
     outline-offset: -1px;
     background: color-mix(in srgb, var(--color-phosphor) 14%, transparent);
-    color: var(--color-phosphor-bright);
+    color: var(--color-ink-bright);
   }
 }
