@@ -76,8 +76,8 @@ async function networkFirst(request) {
 function offlinePage() {
   const html = `<!DOCTYPE html><meta name="viewport" content="width=device-width,initial-scale=1">
     <title>OFFLINE</title>
-    <body style="background:#020a04;color:#3dff72;font-family:monospace;padding:2rem">
+    <body style="background:#030508;color:#b4d6ff;font-family:monospace;padding:2rem;border:4px solid #5cffa1;margin:8px;min-height:calc(100vh - 16px);box-sizing:border-box">
     <p>C:\\&gt; NO CARRIER</p><p>This page hasn't been opened on this device yet, so it isn't available offline.</p>
-    <p><a href="/" style="color:#c4ffd4">◄ back to notes</a></p></body>`
+    <p><a href="/" style="color:#e6f2ff">◄ back to notes</a></p></body>`
   return new Response(html, { status: 503, headers: { "Content-Type": "text/html; charset=utf-8" } })
 }

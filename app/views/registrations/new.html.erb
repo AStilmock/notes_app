@@ -3,7 +3,7 @@
 <div class="p-4 sm:p-6 crt-glow">
   <section class="panel-dos mx-auto max-w-md mt-[8vh] px-6 pt-8 pb-6">
     <h1 class="panel-dos-title">REGISTER.EXE</h1>
-    <p class="text-phosphor-dim mb-6 cursor-block">C:\&gt; NEW USER</p>
+    <p class="text-ink-dim mb-6 cursor-block">C:\&gt; NEW USER</p>
 
     <%= form_with model: @user, url: registration_path, class: "grid gap-5" do |form| %>
       <% if @user.errors.any? %>
@@ -15,19 +15,19 @@
       <% end %>
 
       <label class="block">
-        <span class="text-sm text-phosphor-dim tracking-widest">EMAIL:</span>
+        <span class="text-sm text-ink-dim tracking-widest">EMAIL:</span>
         <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username",
               class: "input-dos text-xl" %>
       </label>
 
       <label class="block">
-        <span class="text-sm text-phosphor-dim tracking-widest">PASSWORD (8+ CHARS):</span>
+        <span class="text-sm text-ink-dim tracking-widest">PASSWORD (8+ CHARS):</span>
         <%= form.password_field :password, required: true, autocomplete: "new-password", minlength: 8, maxlength: 72,
               class: "input-dos text-xl" %>
       </label>
 
       <label class="block">
-        <span class="text-sm text-phosphor-dim tracking-widest">CONFIRM PASSWORD:</span>
+        <span class="text-sm text-ink-dim tracking-widest">CONFIRM PASSWORD:</span>
         <%= form.password_field :password_confirmation, required: true, autocomplete: "new-password", maxlength: 72,
               class: "input-dos text-xl" %>
       </label>
@@ -35,8 +35,8 @@
       <div class="pt-2"><%= form.button "CREATE ACCOUNT", class: "btn-dos" %></div>
     <% end %>
 
-    <p class="mt-6 pt-4 border-t border-phosphor-faint text-sm text-phosphor-dim">
-      have an account? <%= link_to "LOGIN", new_session_path, class: "text-phosphor hover:text-phosphor-bright underline" %>
+    <p class="mt-6 pt-4 border-t border-phosphor-faint text-sm text-ink-dim">
+      have an account? <%= link_to "LOGIN", new_session_path, class: "text-ink hover:text-ink-bright underline" %>
     </p>
   </section>
 </div>

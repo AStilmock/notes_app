@@ -3,7 +3,7 @@
   <head>
     <title><%= content_for(:title) || "Notes App" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-    <meta name="theme-color" content="#020a04">
+    <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Notes">
@@ -25,9 +25,8 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <%# safe-area padding keeps content clear of the notch / home bar when installed on a phone %>
-  <body class="crt-screen bg-screen text-phosphor font-mono text-lg
-               pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] pb-[env(safe-area-inset-bottom)]">
+  <%# .crt-screen pads content inside the green frame, and clear of the notch / home bar on a phone %>
+  <body class="crt-screen text-ink font-mono text-lg">
     <%= render "layouts/menu" %>
 
     <%= render "layouts/flash" %>
@@ -37,5 +36,7 @@
     </main>
 
     <%= render "layouts/confirm_dialog" %>
+
+    <div class="crt-frame" aria-hidden="true"></div>
   </body>
 </html>
