@@ -1,0 +1,83 @@
+// Service worker: makes the app installable and usable offline.
+//  - /assets/* and icons: cache-first (asset URLs are fingerprinted, so a cached copy never goes stale)
+//  - pages: network-first, falling back to the last cached copy when offline
+//  - login / sign-up / password pages are never cached
+// Saving offline is handled in the page by the autosave outbox (app/javascript/lib/autosave.js).
+<%
+  shell = [
+    asset_path("tailwind.css"),
+    asset_path("application.css"),
+    asset_path("vt323-latin-400-normal.woff2"),
+    asset_path("share-tech-mono-latin-400-normal.woff2"),
+    "/icon.svg", "/icon-192.png", "/icon-512.png", "/apple-touch-icon.png"
+  ]
+%>
+const VERSION = "<%= Digest::SHA256.hexdigest(shell.join)[0, 12] %>"
+const ASSETS = `assets-${VERSION}`
+const PAGES = "pages-v1"
+const SHELL = <%= raw shell.to_json %>
+const NEVER_CACHE = ["/session", "/passwords", "/registration"]
+
+self.addEventListener("install", (event) => {
+  event.waitUntil(caches.open(ASSETS).then((cache) => cache.addAll(SHELL)).then(() => self.skipWaiting()))
+})
+
+// drop asset caches from older versions
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches.keys()
+      .then((keys) => Promise.all(keys.filter((key) => key.startsWith("assets-") && key !== ASSETS).map((key) => caches.delete(key))))
+      .then(() => self.clients.claim())
+  )
+})
+
+self.addEventListener("fetch", (event) => {
+  const { request } = event
+  if (request.method !== "GET") return
+
+  const url = new URL(request.url)
+  if (url.origin !== self.location.origin) return
+
+  if (url.pathname.startsWith("/assets/") || SHELL.includes(url.pathname)) {
+    event.respondWith(cacheFirst(request))
+  } else if (isPage(request) && !NEVER_CACHE.some((path) => url.pathname.startsWith(path))) {
+    event.respondWith(networkFirst(request))
+  }
+})
+
+// full page loads and Turbo Drive visits (fetches that accept HTML)
+function isPage(request) {
+  return request.mode === "navigate" || (request.headers.get("Accept") || "").includes("text/html")
+}
+
+async function cacheFirst(request) {
+  const cached = await caches.match(request)
+  if (cached) return cached
+
+  const response = await fetch(request)
+  if (response.ok) (await caches.open(ASSETS)).put(request, response.clone())
+  return response
+}
+
+async function networkFirst(request) {
+  try {
+    const response = await fetch(request)
+    // a redirect here usually means "log in", which must not replace the cached page
+    if (response.ok && !response.redirected) {
+      (await caches.open(PAGES)).put(request.url, response.clone())
+    }
+    return response
+  } catch (e) {
+    const cached = await caches.match(request.url, { cacheName: PAGES })
+    return cached || offlinePage()
+  }
+}
+
+function offlinePage() {
+  const html = `<!DOCTYPE html><meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>OFFLINE</title>
+    <body style="background:#020a04;color:#3dff72;font-family:monospace;padding:2rem">
+    <p>C:\\&gt; NO CARRIER</p><p>This page hasn't been opened on this device yet, so it isn't available offline.</p>
+    <p><a href="/" style="color:#c4ffd4">◄ back to notes</a></p></body>`
+  return new Response(html, { status: 503, headers: { "Content-Type": "text/html; charset=utf-8" } })
+}

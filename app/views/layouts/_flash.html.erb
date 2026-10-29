@@ -1,0 +1,10 @@
+<% if flash[:alert] || flash[:notice] %>
+  <div class="px-4 sm:px-6 pt-4 crt-glow" role="status">
+    <% if flash[:alert] %>
+      <p id="alert" class="border border-alert-faint text-alert px-3 py-1">!! <%= flash[:alert] %></p>
+    <% end %>
+    <% if flash[:notice] %>
+      <p id="notice" class="border border-phosphor-faint text-phosphor-bright px-3 py-1">&gt;&gt; <%= flash[:notice] %></p>
+    <% end %>
+  </div>
+<% end %>

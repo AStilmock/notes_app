@@ -1,0 +1,11 @@
+one:
+  user: one
+  title: Budget
+  cells: <%= [["item", "cost"], ["rent", "1200"]].to_json %>
+  position: 0
+
+other_users:
+  user: two
+  title: Not yours
+  cells: <%= [["secret"]].to_json %>
+  position: 0

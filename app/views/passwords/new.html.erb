@@ -1,0 +1,21 @@
+<% content_for :title, "RESET PASSWORD" %>
+
+<div class="p-4 sm:p-6 crt-glow">
+  <section class="panel-dos mx-auto max-w-md mt-[8vh] px-6 pt-8 pb-6">
+    <h1 class="panel-dos-title">RECOVER.EXE</h1>
+    <p class="text-phosphor-dim mb-6 cursor-block">C:\&gt; FORGOT PASSWORD</p>
+
+    <%= form_with url: passwords_path, class: "grid gap-5" do |form| %>
+      <label class="block">
+        <span class="text-sm text-phosphor-dim tracking-widest">EMAIL:</span>
+        <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username",
+              value: params[:email_address], class: "input-dos text-xl" %>
+      </label>
+
+      <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+        <%= form.button "SEND RESET LINK", class: "btn-dos" %>
+        <%= link_to "◄ back to login", new_session_path, class: "text-sm text-phosphor-dim hover:text-phosphor-bright" %>
+      </div>
+    <% end %>
+  </section>
+</div>

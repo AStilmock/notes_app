@@ -1,17 +1,19 @@
 <% content_for :title, "NOTEPADS" %>
 
-<div class="min-h-screen p-6 crt-glow">
-  <div class="flex items-center justify-between border-b border-green-500 pb-3 mb-6">
-    <h1 class="text-2xl tracking-widest">&gt; NOTEPADS<span class="animate-pulse">_</span></h1>
-    <%= button_to "+ NEW", note_pads_path,
-        class: "border border-green-500 px-3 py-1 cursor-pointer hover:bg-green-500 hover:text-black transition" %>
+<div class="p-4 sm:p-6 crt-glow">
+  <div class="flex items-center justify-between border-b border-phosphor-dim pb-3 mb-8">
+    <h1 class="text-3xl tracking-widest text-phosphor-bright cursor-block">&gt; NOTEPADS</h1>
+    <%= button_to "NEW", note_pads_path, class: "btn-dos" %>
   </div>
 
-  <div id="note_pads_list" class="grid gap-3">
-    <% if @note_pads.empty? %>
-      <p class="text-green-600 italic">// no entries found</p>
-    <% else %>
-      <%= render @note_pads %>
-    <% end %>
-  </div>
+  <section class="panel-dos px-3 pt-6 pb-3 sm:px-4">
+    <h2 class="panel-dos-title">DIR C:\NOTES</h2>
+    <div id="note_pads_list" class="grid gap-2">
+      <% if @note_pads.empty? %>
+        <p class="text-phosphor-dim">// no entries found</p>
+      <% else %>
+        <%= render @note_pads %>
+      <% end %>
+    </div>
+  </section>
 </div>

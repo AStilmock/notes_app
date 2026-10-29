@@ -1,22 +1,20 @@
 {
-  "name": "NotesApp",
-  "icons": [
-    {
-      "src": "/icon.png",
-      "type": "image/png",
-      "sizes": "512x512"
-    },
-    {
-      "src": "/icon.png",
-      "type": "image/png",
-      "sizes": "512x512",
-      "purpose": "maskable"
-    }
-  ],
+  "id": "/",
+  "name": "NOTES_APP",
+  "short_name": "Notes",
+  "description": "Notes and spreadsheets in a DOS terminal.",
   "start_url": "/",
-  "display": "standalone",
   "scope": "/",
-  "description": "NotesApp.",
-  "theme_color": "red",
-  "background_color": "red"
+  "display": "standalone",
+  "theme_color": "#020a04",
+  "background_color": "#020a04",
+  "icons": [
+    { "src": "/icon-192.png", "type": "image/png", "sizes": "192x192" },
+    { "src": "/icon-512.png", "type": "image/png", "sizes": "512x512" },
+    { "src": "/icon-maskable-512.png", "type": "image/png", "sizes": "512x512", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Notes", "url": "/note_pads", "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Spreadsheets", "url": "/spread_sheets", "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }] }
+  ]
 }

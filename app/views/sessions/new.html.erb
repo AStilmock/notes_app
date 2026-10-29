@@ -1,0 +1,33 @@
+<% content_for :title, "LOGIN" %>
+
+<div class="p-4 sm:p-6 crt-glow">
+  <%# signed out: drop any cached pages so the next person on this device can't read them offline %>
+  <section class="panel-dos mx-auto max-w-md mt-[8vh] px-6 pt-8 pb-6"
+           data-controller="offline-cache" data-offline-cache-clear-on-connect-value="true">
+    <h1 class="panel-dos-title">LOGIN.EXE</h1>
+    <p class="text-phosphor-dim mb-6 cursor-block">C:\&gt; AUTHENTICATE</p>
+
+    <%= form_with url: session_url, class: "grid gap-5" do |form| %>
+      <label class="block">
+        <span class="text-sm text-phosphor-dim tracking-widest">EMAIL:</span>
+        <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username",
+              value: params[:email_address], class: "input-dos text-xl" %>
+      </label>
+
+      <label class="block">
+        <span class="text-sm text-phosphor-dim tracking-widest">PASSWORD:</span>
+        <%= form.password_field :password, required: true, autocomplete: "current-password", maxlength: 72,
+              class: "input-dos text-xl" %>
+      </label>
+
+      <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+        <%= form.button "LOGIN", class: "btn-dos" %>
+        <%= link_to "forgot password?", new_password_path, class: "text-sm text-phosphor-dim hover:text-phosphor-bright" %>
+      </div>
+    <% end %>
+
+    <p class="mt-6 pt-4 border-t border-phosphor-faint text-sm text-phosphor-dim">
+      no account? <%= link_to "REGISTER", new_registration_path, class: "text-phosphor hover:text-phosphor-bright underline" %>
+    </p>
+  </section>
+</div>

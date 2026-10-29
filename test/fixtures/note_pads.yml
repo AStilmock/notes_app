@@ -1,9 +1,17 @@
 one:
+  user: one
   title: First pad
   body: Some text
   position: 0
 
 two:
+  user: one
   title: Second pad
   body: More text
   position: 1
+
+other_users:
+  user: two
+  title: Not yours
+  body: Private
+  position: 0

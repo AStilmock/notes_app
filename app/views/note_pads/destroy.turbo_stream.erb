@@ -1,6 +1,6 @@
 <%= turbo_stream.remove dom_id(@note_pad) %>
-<% if NotePad.none? %>
+<% if Current.user.note_pads.none? %>
   <%= turbo_stream.update "note_pads_list" do %>
-    <p class="text-green-600 italic">// no entries found</p>
+    <p class="text-phosphor-dim">// no entries found</p>
   <% end %>
 <% end %>
