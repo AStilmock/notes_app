@@ -273,13 +273,15 @@
 
 @layer components {
   /* spreadsheet grid (spread_sheet_controller.js draws the cells) */
+  /* fixed layout: column widths come from the <col> elements the controller sizes */
   .sheet-grid {
     border-collapse: collapse;
+    table-layout: fixed;
     font-size: 1rem;
   }
 
   .sheet-grid th {
-    min-width: 2.5rem;
+    position: relative;
     padding: 0.125rem 0.5rem;
     border: 1px solid var(--color-phosphor-faint);
     color: var(--color-ink-dim);
@@ -298,7 +300,9 @@
   }
 
   .sheet-grid input {
-    width: 9rem;
+    display: block;
+    width: 100%;
+    min-width: 0;
     padding: 0.25rem 0.5rem;
     background: transparent;
     color: var(--color-ink);
@@ -310,5 +314,49 @@
     outline-offset: -1px;
     background: color-mix(in srgb, var(--color-phosphor) 14%, transparent);
     color: var(--color-ink-bright);
+  }
+
+  /* drag handles on the header edges; the bright line shows while hovering or dragging */
+  .sheet-resize-col,
+  .sheet-resize-row {
+    position: absolute;
+    z-index: 1;
+    touch-action: none;
+  }
+
+  .sheet-resize-col {
+    top: 0;
+    right: -5px;
+    width: 10px;
+    height: 100%;
+    cursor: col-resize;
+  }
+
+  .sheet-resize-row {
+    left: 0;
+    bottom: -5px;
+    width: 100%;
+    height: 10px;
+    cursor: row-resize;
+  }
+
+  .sheet-resize-col::after,
+  .sheet-resize-row::after {
+    content: "";
+    position: absolute;
+    background: var(--color-phosphor);
+    box-shadow: 0 0 6px var(--color-phosphor);
+    opacity: 0;
+    transition: opacity 80ms;
+  }
+
+  .sheet-resize-col::after { top: 0; bottom: 0; left: 4px; width: 2px; }
+  .sheet-resize-row::after { left: 0; right: 0; top: 4px; height: 2px; }
+
+  .sheet-resize-col:hover::after,
+  .sheet-resize-row:hover::after,
+  .sheet-resize-col[data-resizing]::after,
+  .sheet-resize-row[data-resizing]::after {
+    opacity: 1;
   }
 }

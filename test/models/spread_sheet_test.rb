@@ -39,4 +39,32 @@ class SpreadSheetTest < ActiveSupport::TestCase
     sheet.cells = [ [ "x" * (SpreadSheet::MAX_CELL_LENGTH + 1) ] ]
     assert_not sheet.valid?
   end
+
+  test "column widths and row heights are whole pixels in range, or nil for the default" do
+    sheet = spread_sheets(:one) # 2 x 2
+
+    sheet.col_widths = [ 200, nil ]
+    sheet.row_heights = [ nil, 60 ]
+    assert sheet.valid?
+
+    sheet.col_widths = [ SpreadSheet::COL_WIDTHS.max + 1 ]
+    assert_not sheet.valid?
+
+    sheet.col_widths = [ 120.5 ]
+    assert_not sheet.valid?
+
+    sheet.col_widths = []
+    sheet.row_heights = [ SpreadSheet::ROW_HEIGHTS.min - 1 ]
+    assert_not sheet.valid?
+
+    sheet.row_heights = "tall"
+    assert_not sheet.valid?
+  end
+
+  test "sizes for rows and columns that no longer exist are dropped" do
+    sheet = spread_sheets(:one)
+    sheet.update!(cells: [ [ "a" ] ], col_widths: [ 200, 300 ], row_heights: [ 40, 50 ])
+    assert_equal [ 200 ], sheet.col_widths
+    assert_equal [ 40 ], sheet.row_heights
+  end
 end

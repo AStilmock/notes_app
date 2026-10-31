@@ -4,6 +4,10 @@
      data-controller="spread-sheet"
      data-spread-sheet-url-value="<%= spread_sheet_path(@spread_sheet) %>"
      data-spread-sheet-cells-value="<%= @spread_sheet.cells.to_json %>"
+     data-spread-sheet-col-widths-value="<%= @spread_sheet.col_widths.to_json %>"
+     data-spread-sheet-row-heights-value="<%= @spread_sheet.row_heights.to_json %>"
+     data-spread-sheet-width-range-value="<%= [SpreadSheet::COL_WIDTHS.min, SpreadSheet::COL_WIDTHS.max].to_json %>"
+     data-spread-sheet-height-range-value="<%= [SpreadSheet::ROW_HEIGHTS.min, SpreadSheet::ROW_HEIGHTS.max].to_json %>"
      data-spread-sheet-max-rows-value="<%= SpreadSheet::MAX_ROWS %>"
      data-spread-sheet-max-cols-value="<%= SpreadSheet::MAX_COLS %>">
 
@@ -28,8 +32,10 @@
       <button type="button" class="btn-dos text-sm" data-action="spread-sheet#addColumn">+ COL</button>
       <button type="button" class="btn-dos btn-dos-alert text-sm" data-action="spread-sheet#removeRow">− ROW</button>
       <button type="button" class="btn-dos btn-dos-alert text-sm" data-action="spread-sheet#removeColumn">− COL</button>
-      <span class="ml-auto hidden sm:inline text-ink-dim">
-        ARROWS / ENTER move · − removes the selected row/col
+      <button type="button" class="btn-dos text-sm" data-action="spread-sheet#fitAllColumns"
+              title="Widen or narrow every column to fit its longest text">FIT</button>
+      <span class="ml-auto hidden lg:inline text-ink-dim">
+        ARROWS / ENTER move · drag a header edge to resize · double-click it to fit
       </span>
     </div>
 

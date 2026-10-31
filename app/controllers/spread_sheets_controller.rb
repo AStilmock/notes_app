@@ -43,10 +43,13 @@ class SpreadSheetsController < ApplicationController
     @spread_sheet = Current.user.spread_sheets.find(params[:id])
   end
 
-  # the grid arrives as one JSON string (an array of rows) so it survives form encoding intact
+  # the grid and its column widths / row heights each arrive as one JSON string,
+  # so nested arrays (and nulls) survive form encoding intact
+  JSON_FIELDS = %i[cells col_widths row_heights].freeze
+
   def spread_sheet_params
-    params.require(:spread_sheet).permit(:title, :cells).tap do |attrs|
-      attrs[:cells] = JSON.parse(attrs[:cells]) if attrs.key?(:cells)
+    params.require(:spread_sheet).permit(:title, *JSON_FIELDS).tap do |attrs|
+      JSON_FIELDS.each { |field| attrs[field] = JSON.parse(attrs[field]) if attrs.key?(field) }
     end
   end
 end

@@ -36,6 +36,24 @@ class SpreadSheetsControllerTest < ActionDispatch::IntegrationTest
     assert_equal cells, @sheet.cells
   end
 
+  test "autosave saves column widths and row heights" do
+    patch spread_sheet_url(@sheet), params: { spread_sheet: {
+      cells: @sheet.cells.to_json, col_widths: [ 260, nil ].to_json, row_heights: [ nil, 64 ].to_json
+    } }, as: :turbo_stream
+    assert_response :success
+    @sheet.reload
+    assert_equal [ 260, nil ], @sheet.col_widths
+    assert_equal [ nil, 64 ], @sheet.row_heights
+
+    get spread_sheet_url(@sheet)
+    assert_select "[data-spread-sheet-col-widths-value=?][data-spread-sheet-row-heights-value=?]", "[260,null]", "[null,64]"
+  end
+
+  test "autosave rejects out-of-range sizes" do
+    patch spread_sheet_url(@sheet), params: { spread_sheet: { col_widths: [ 5 ].to_json } }, as: :turbo_stream
+    assert_response :unprocessable_entity
+  end
+
   test "autosave rejects a malformed grid" do
     patch spread_sheet_url(@sheet), params: { spread_sheet: { cells: [ [ "a" ], [ "b", "c" ] ].to_json } }, as: :turbo_stream
     assert_response :unprocessable_entity
