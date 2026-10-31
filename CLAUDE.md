@@ -24,13 +24,19 @@ Run with `bin/dev` (Rails server + Tailwind watcher), tests with `bin/rails test
 
 ## SpreadSheet (built)
 - `spread_sheets`: `user_id` (not null, FK); `title` string, not null, default "Untitled"; `cells` jsonb, not null, default 3x3 of `""`
-  (an array of rows of strings); `position` integer. Validated as a rectangular grid, max 100 rows × 26 cols (A–Z), 1000 chars per cell.
+  (an array of rows of strings); `col_widths` / `row_heights` jsonb, not null, default `[]`; `position` integer. Validated as a rectangular grid, max 100 rows × 26 cols (A–Z), 1000 chars per cell.
 - `Positioned` concern (shared with NotePad): `before_create` end-of-list position per user + `ordered` scope.
 - Same RESTful shape as NotePad: `resources :spread_sheets, only: index/show/create/update/destroy`, Turbo Stream update/destroy.
-  Autosave sends `spread_sheet[cells]` as one JSON string; the controller parses it (bad JSON or bad grid → 422).
+  Autosave sends `spread_sheet[cells]`, `[col_widths]` and `[row_heights]` each as one JSON string; the controller parses them
+  (bad JSON, bad grid or out-of-range sizes → 422).
 - `spread_sheet_controller.js` draws the grid from the `cells` value, keeps edits in `this.cells`, and autosaves through `Autosave`.
   Arrows/Enter move between cells. + ROW / + COL append; − ROW / − COL remove the selected row/column.
 - Spreadsheet pages put `font-sheet` (Share Tech Mono) on their page container. Grid styles are `.sheet-grid` in application.css.
+- Resizable cells: `col_widths` / `row_heights` jsonb arrays (px per column / row, `null` = default; ranges `SpreadSheet::COL_WIDTHS`
+  48–1600 and `ROW_HEIGHTS` 24–320, passed to the JS as values). Sizes past the grid's edge are trimmed in `before_validation`.
+  The grid uses `table-layout: fixed` with a `<colgroup>`; drag `.sheet-resize-col` / `.sheet-resize-row` handles on header edges
+  (pointer events, so touch works). Double-click a column edge or press FIT to fit text (measured with canvas `measureText` in the
+  cell font); double-click a row edge to reset. Add/remove row/col splice the size arrays too. No text wrapping (one line per cell).
 
 ## Menu
 - `layouts/_menu.html.erb`, rendered on every page above `<main>`: a sticky DOS menu bar. The active section is in inverse video (`aria-current="page"`).
