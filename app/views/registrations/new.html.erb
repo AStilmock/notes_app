@@ -21,6 +21,12 @@
       </label>
 
       <label class="block">
+        <span class="text-sm text-ink-dim tracking-widest">USERNAME (OPTIONAL):</span>
+        <%= form.text_field :username, autocomplete: "nickname", maxlength: 30,
+              class: "input-dos text-xl" %>
+      </label>
+
+      <label class="block">
         <span class="text-sm text-ink-dim tracking-widest">PASSWORD (8+ CHARS):</span>
         <%= form.password_field :password, required: true, autocomplete: "new-password", minlength: 8, maxlength: 72,
               class: "input-dos text-xl" %>

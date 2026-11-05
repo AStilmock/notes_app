@@ -10,8 +10,14 @@
     <%= form_with url: session_url, class: "grid gap-5" do |form| %>
       <label class="block">
         <span class="text-sm text-ink-dim tracking-widest">EMAIL:</span>
-        <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username",
-              value: params[:email_address], class: "input-dos text-xl" %>
+        <%= form.email_field :email_address, autofocus: true, autocomplete: "email", class: "input-dos text-xl" %>
+      </label>
+
+      <label class="block">
+        <span class="text-sm text-ink-dim tracking-widest">USERNAME (OPTIONAL):</span>
+        <%= form.text_field :username, autocomplete: "username", autocapitalize: "none", spellcheck: false,
+              maxlength: 30, class: "input-dos text-xl" %>
+        <span class="block mt-1 text-sm text-ink-muted">log in with your email, your username, or both</span>
       </label>
 
       <label class="block">

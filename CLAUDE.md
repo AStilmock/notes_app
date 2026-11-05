@@ -9,6 +9,9 @@ Run with `bin/dev` (Rails server + Tailwind watcher), tests with `bin/rails test
 - Everything belongs to a user. Controllers always query through `Current.user.<things>`, so another user's record is a 404.
 - `request_authentication` redirects page loads to the login page, but answers background requests that don't accept HTML
   (autosave fetches) with **401**, so the JS can react instead of silently "saving" to a login page.
+- Optional `username` (3–30 chars of letters/numbers/`_.-`, unique ignoring case; blank is stored as nil). Set at sign-up or on
+  `/account/edit` (`AccountsController`, `resource :account`). The menu shows `Current.user.display_name` (username, else email) and links to it.
+  Login has an EMAIL field and a USERNAME (OPTIONAL) field; fill either (`User.authenticate_by_login`). If both, they must match one user.
 - Dev mail (password resets) opens in the browser via `letter_opener`.
 - Tests: `sign_in_as(users(:one))` / `sign_out` (test/test_helpers/session_test_helper.rb). Fixture password is "password".
 

@@ -1,0 +1,27 @@
+<% content_for :title, "ACCOUNT" %>
+
+<div class="p-4 sm:p-6 crt-glow">
+  <section class="panel-dos mx-auto max-w-md mt-[8vh] px-6 pt-8 pb-6">
+    <h1 class="panel-dos-title">ACCOUNT.EXE</h1>
+    <p class="text-ink-dim mb-6 cursor-block">C:\&gt; <%= @user.email_address %></p>
+
+    <%= form_with model: @user, url: account_path, method: :patch, class: "grid gap-5" do |form| %>
+      <% if @user.errors.any? %>
+        <ul id="errors" class="border border-alert-faint text-alert px-3 py-2 text-base">
+          <% @user.errors.full_messages.each do |message| %>
+            <li>!! <%= message %></li>
+          <% end %>
+        </ul>
+      <% end %>
+
+      <label class="block">
+        <span class="text-sm text-ink-dim tracking-widest">USERNAME (OPTIONAL):</span>
+        <%= form.text_field :username, autofocus: true, autocomplete: "nickname", maxlength: 30,
+              class: "input-dos text-xl" %>
+        <span class="block mt-1 text-sm text-ink-muted">leave blank to show your email in the menu</span>
+      </label>
+
+      <div class="pt-2"><%= form.button "SAVE", class: "btn-dos" %></div>
+    <% end %>
+  </section>
+</div>

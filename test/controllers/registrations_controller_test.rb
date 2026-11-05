@@ -15,6 +15,11 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert User.exists?(email_address: "new@example.com")
   end
 
+  test "create saves an optional username" do
+    post registration_url, params: { user: { email_address: "neo@example.com", username: "Neo", password: "longenough", password_confirmation: "longenough" } }
+    assert_equal "Neo", User.find_by(email_address: "neo@example.com").username
+  end
+
   test "create rejects short passwords and duplicate emails" do
     assert_no_difference("User.count") do
       post registration_url, params: { user: { email_address: users(:one).email_address, password: "short", password_confirmation: "short" } }

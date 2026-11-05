@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   resource :session
   resources :passwords, param: :token
   resource :registration, only: %i[new create]
+  resource :account, only: %i[edit update]
   resources :note_pads, only: %i[index show create update destroy]
   resources :spread_sheets, only: %i[index show create update destroy]
   root "note_pads#index"

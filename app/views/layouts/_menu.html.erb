@@ -37,7 +37,8 @@
 
     <div class="flex items-center gap-3 pl-4 text-sm text-ink-dim">
       <% if authenticated? %>
-        <span class="hidden md:inline truncate max-w-[24ch]" title="Signed in">USER: <%= Current.user.email_address %></span>
+        <%= link_to edit_account_path, title: "Account settings",
+              class: "hidden md:inline truncate max-w-[24ch] hover:text-ink-bright" do %>USER: <%= Current.user.display_name %><% end %>
         <%= button_to "LOGOUT", session_path, method: :delete, form_class: "flex",
               form: { data: { controller: "offline-cache", action: "submit->offline-cache#clear" } },
               class: "px-4 min-h-11 tracking-widest text-ink hover:bg-phosphor hover:text-screen cursor-pointer" %>
