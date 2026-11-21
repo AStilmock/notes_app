@@ -22,7 +22,11 @@ Run with `bin/dev` (Rails server + Tailwind watcher), tests with `bin/rails test
   There is no new/edit page: "+ NEW" POSTs create, which redirects straight into the pad. Show is also the editor.
 - `update` and `destroy` answer with Turbo Streams (`update.turbo_stream.erb` replaces the row, `destroy` removes it).
 - Autosave: `app/javascript/controllers/note_pad_controller.js`. Waits 600ms after typing stops, then PATCHes title and body with fetch (no form submit).
-  Status shows editing/saving/saved/error/offline. `disconnect()` saves any pending edit with `keepalive` so the last keystrokes survive navigation.
+  Status shows editing/saving/saved/error/offline.
+- Rich-text body: a `contenteditable` div (not a textarea), saved as HTML. `NotePad` sanitizes it on save (`normalizes :body`) to
+  `NotePad::BODY_TAGS` with no attributes, and the view sanitizes again. Pastes are plain text. Formatting keys (`.btn-key`, big gray
+  B / I / U / S / LIST / CLEAR) sit in a `.crt-sticky-bottom` toolbar and call `execCommand`; Ctrl/⌘+B/I/U native, Ctrl/⌘+Shift+X strike.
+  Line height must stay 2rem to sit on `.ruled-lines` (use `text-xl/8`, not a bare `text-*` utility, which resets line-height). `disconnect()` saves any pending edit with `keepalive` so the last keystrokes survive navigation.
   The debounce/PATCH/status/keepalive logic lives in `app/javascript/lib/autosave.js` (`Autosave` class), shared with the spreadsheet.
 
 ## SpreadSheet (built)
@@ -30,16 +34,25 @@ Run with `bin/dev` (Rails server + Tailwind watcher), tests with `bin/rails test
   (an array of rows of strings); `col_widths` / `row_heights` jsonb, not null, default `[]`; `position` integer. Validated as a rectangular grid, max 100 rows × 26 cols (A–Z), 1000 chars per cell.
 - `Positioned` concern (shared with NotePad): `before_create` end-of-list position per user + `ordered` scope.
 - Same RESTful shape as NotePad: `resources :spread_sheets, only: index/show/create/update/destroy`, Turbo Stream update/destroy.
-  Autosave sends `spread_sheet[cells]`, `[col_widths]` and `[row_heights]` each as one JSON string; the controller parses them
+  Autosave sends `spread_sheet[cells]`, `[col_widths]`, `[row_heights]` and `[formats]` each as one JSON string; the controller parses them
   (bad JSON, bad grid or out-of-range sizes → 422).
 - `spread_sheet_controller.js` draws the grid from the `cells` value, keeps edits in `this.cells`, and autosaves through `Autosave`.
-  Arrows/Enter move between cells. + ROW / + COL append; − ROW / − COL remove the selected row/column.
+  Arrows/Enter move between cells. + ROW / + COL append; − ROW / − COL remove the selected rows/columns.
+  One gray `.btn-key` toolbar under the title: + ROW / + COL / − ROW / − COL (`.btn-key-alert`) / FIT, then the format keys.
 - Spreadsheet pages put `font-sheet` (Share Tech Mono) on their page container. Grid styles are `.sheet-grid` in application.css.
 - Resizable cells: `col_widths` / `row_heights` jsonb arrays (px per column / row, `null` = default; ranges `SpreadSheet::COL_WIDTHS`
   48–1600 and `ROW_HEIGHTS` 24–320, passed to the JS as values). Sizes past the grid's edge are trimmed in `before_validation`.
   The grid uses `table-layout: fixed` with a `<colgroup>`; drag `.sheet-resize-col` / `.sheet-resize-row` handles on header edges
   (pointer events, so touch works). Double-click a column edge or press FIT to fit text (measured with canvas `measureText` in the
   cell font); double-click a row edge to reset. Add/remove row/col splice the size arrays too. No text wrapping (one line per cell).
+- Selection: a rectangle from `anchor` (focused cell) to `corner`. Drag, Shift+click, Shift+arrows, or click a column letter / row
+  number (Shift+click extends). Formatting, Delete/Backspace (multi-cell) and − ROW / − COL act on the whole selection.
+- Clipboard: copy/cut put the selection on the clipboard as TSV (Excel / Google Sheets compatible); one cell with text highlighted
+  copies just that text. Paste lands a block at the selection's top-left, growing the grid (up to the max); a single value pasted
+  into a multi-cell selection fills it. Formats come along only when the pasted text is what this page last copied.
+- Cell formats: `formats` jsonb grid like `cells`, each a string of flags `b i u s` (`SpreadSheet::FORMAT_FLAGS`; nil/"" = plain),
+  trimmed to the grid and validated like the sizes. Whole-cell only. B / I / U / S / CLEAR keys after FIT, Ctrl/⌘+B/I/U,
+  Ctrl/⌘+Shift+X. The JS sets `data-format` on the input; `.sheet-grid input[data-format*=…]` styles it.
 
 ## Menu
 - `layouts/_menu.html.erb`, rendered on every page above `<main>`: a sticky DOS menu bar. The active section is in inverse video (`aria-current="page"`).
@@ -63,6 +76,7 @@ Run with `bin/dev` (Rails server + Tailwind watcher), tests with `bin/rails test
   - text: `ink-bright` / `ink` / `ink-dim` / `ink-muted` (placeholders), all WCAG AA on `screen`
   - lines, frame and highlights: `frame` (screen outline), `phosphor-bright` / `phosphor` / `phosphor-dim` / `phosphor-faint` (borders only, never text)
   - `screen` (background), `alert` / `alert-faint`
+  - `key-bright` / `key` / `key-dim` / `key-ink` / `key-alert`: gray keycaps, used only by the toolbars (`.btn-key`; the user asked for gray)
   Rule of thumb: text is blue (`text-ink*`), borders and inverse-video highlights are green (`border-phosphor*`, `bg-phosphor`).
 - Fonts are self-hosted in `app/assets/fonts`. `font-mono` is VT323 (the whole app, set on `<body>`; `size-adjust` scales it up).
   `font-sheet` is Share Tech Mono (spreadsheet pages only).
@@ -71,7 +85,8 @@ Run with `bin/dev` (Rails server + Tailwind watcher), tests with `bin/rails test
   shadow is the black bezel, its inset shadows give depth. Sticky bars use `.crt-sticky-top` so they sit inside the frame.
   No Matrix rain / animated backgrounds (the user disliked it).
 - `.crt-glow` (blue phosphor text-shadow) goes on page containers, not on each element.
-- Components: `.btn-dos` (`[ LABEL ]`, inverse video on hover; `.btn-dos-alert` for destructive), `.panel-dos` + `.panel-dos-title`
+- Components: `.btn-dos` (`[ LABEL ]`, inverse video on hover; `.btn-dos-alert` for destructive), `.btn-key` (gray keycap,
+  sunk when `aria-pressed="true"`), `.panel-dos` + `.panel-dos-title`
   (title cut into the top border), `.input-dos`, `.cursor-block` (blinking █), `.dialog-dos`.
 - `.ruled-lines` makes the legal-pad textarea (32px line-height + gradient, `background-attachment: local`).
   The title is a big header with a solid 2px bottom border, and no ruled lines.

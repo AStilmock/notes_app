@@ -6,10 +6,12 @@
      data-spread-sheet-cells-value="<%= @spread_sheet.cells.to_json %>"
      data-spread-sheet-col-widths-value="<%= @spread_sheet.col_widths.to_json %>"
      data-spread-sheet-row-heights-value="<%= @spread_sheet.row_heights.to_json %>"
+     data-spread-sheet-formats-value="<%= @spread_sheet.formats.to_json %>"
      data-spread-sheet-width-range-value="<%= [SpreadSheet::COL_WIDTHS.min, SpreadSheet::COL_WIDTHS.max].to_json %>"
      data-spread-sheet-height-range-value="<%= [SpreadSheet::ROW_HEIGHTS.min, SpreadSheet::ROW_HEIGHTS.max].to_json %>"
      data-spread-sheet-max-rows-value="<%= SpreadSheet::MAX_ROWS %>"
-     data-spread-sheet-max-cols-value="<%= SpreadSheet::MAX_COLS %>">
+     data-spread-sheet-max-cols-value="<%= SpreadSheet::MAX_COLS %>"
+     data-spread-sheet-max-cell-length-value="<%= SpreadSheet::MAX_CELL_LENGTH %>">
 
   <div class="flex items-center justify-between mb-6">
     <%= link_to "◄ BACK", spread_sheets_path, class: "text-ink-dim hover:text-ink-bright" %>
@@ -27,15 +29,43 @@
                   px-4 py-4 border-b-2 border-phosphor-dim focus:outline-none focus:border-phosphor
                   placeholder-ink-muted" />
 
-    <div class="flex flex-wrap items-center gap-2 px-4 py-3 border-b border-phosphor-faint text-sm">
-      <button type="button" class="btn-dos text-sm" data-action="spread-sheet#addRow">+ ROW</button>
-      <button type="button" class="btn-dos text-sm" data-action="spread-sheet#addColumn">+ COL</button>
-      <button type="button" class="btn-dos btn-dos-alert text-sm" data-action="spread-sheet#removeRow">− ROW</button>
-      <button type="button" class="btn-dos btn-dos-alert text-sm" data-action="spread-sheet#removeColumn">− COL</button>
-      <button type="button" class="btn-dos text-sm" data-action="spread-sheet#fitAllColumns"
-              title="Widen or narrow every column to fit its longest text">FIT</button>
-      <span class="ml-auto hidden lg:inline text-ink-dim">
-        ARROWS / ENTER move · drag a header edge to resize · double-click it to fit
+    <%# gray keys: grid shape, then formatting for the selected cells (whole cells: a cell is one line of text).
+        mousedown->keepFocus leaves focus (and the selection) in the grid. %>
+    <div role="toolbar" aria-label="Sheet" class="flex flex-wrap items-center gap-1 px-4 py-3 border-b border-phosphor-faint font-mono">
+      <% [
+        { label: "+ ROW", action: "addRow", title: "Add a row at the bottom" },
+        { label: "+ COL", action: "addColumn", title: "Add a column at the right" },
+        { label: "− ROW", action: "removeRow", title: "Remove the selected rows", alert: true },
+        { label: "− COL", action: "removeColumn", title: "Remove the selected columns", alert: true },
+        { label: "FIT", action: "fitAllColumns", title: "Widen or narrow every column to fit its longest text" }
+      ].each do |key| %>
+        <button type="button" class="btn-key <%= "btn-key-alert" if key[:alert] %> h-8 px-2 text-base tracking-widest"
+                data-action="mousedown->spread-sheet#keepFocus click->spread-sheet#<%= key[:action] %>"
+                title="<%= key[:title] %>"><%= key[:label] %></button>
+      <% end %>
+
+      <span class="w-px h-6 mx-2 bg-phosphor-dim" aria-hidden="true"></span>
+
+      <% [
+        { flag: "b", glyph: "B", label: "Bold (Ctrl/⌘+B)", style: "font-bold" },
+        { flag: "i", glyph: "I", label: "Italic (Ctrl/⌘+I)", style: "italic" },
+        { flag: "u", glyph: "U", label: "Underline (Ctrl/⌘+U)", style: "underline underline-offset-2" },
+        { flag: "s", glyph: "S", label: "Strikethrough (Ctrl/⌘+Shift+X)", style: "line-through" }
+      ].each do |key| %>
+        <button type="button" class="btn-key size-8 text-xl"
+                data-spread-sheet-target="formatButton"
+                data-spread-sheet-flag-param="<%= key[:flag] %>"
+                data-action="mousedown->spread-sheet#keepFocus click->spread-sheet#format"
+                title="<%= key[:label] %>" aria-label="<%= key[:label] %>" aria-pressed="false">
+          <span class="<%= key[:style] %>" aria-hidden="true"><%= key[:glyph] %></span>
+        </button>
+      <% end %>
+      <button type="button" class="btn-key h-8 px-2 text-base tracking-widest"
+              data-action="mousedown->spread-sheet#keepFocus click->spread-sheet#clearFormat"
+              title="Clear formatting">CLEAR</button>
+
+      <span class="ml-auto hidden xl:inline text-sm text-ink-dim font-sheet">
+        SHIFT or drag to select · CTRL+C / V copy &amp; paste · drag a header edge to resize
       </span>
     </div>
 

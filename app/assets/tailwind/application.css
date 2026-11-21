@@ -37,6 +37,13 @@
   --color-alert: #ff5c5c;
   --color-alert-faint: #5c1414;
 
+  /* formatting toolbars: gray keycaps (key-ink on key 7.6:1; ink-bright on key-dim, when pressed, 5.9:1) */
+  --color-key-bright: #c8c8c8;
+  --color-key: #9e9e9e;
+  --color-key-dim: #5c5c5c;
+  --color-key-ink: #050505;
+  --color-key-alert: #6a0000;
+
   --animate-blink: blink 1.06s steps(1) infinite;
 
   @keyframes blink {
@@ -93,6 +100,11 @@
   .crt-sticky-top {
     position: sticky;
     top: calc(var(--screen-inset) + env(safe-area-inset-top));
+  }
+
+  .crt-sticky-bottom {
+    position: sticky;
+    bottom: calc(var(--screen-inset) + env(safe-area-inset-bottom));
   }
 
   .crt-screen::before,
@@ -247,14 +259,77 @@
 
   .input-dos::placeholder { color: var(--color-ink-muted); }
 
-  /* legal-pad ruled lines; background-attachment: local keeps the lines
-     attached to the text when the textarea scrolls */
+  /* legal-pad ruled lines, one every 2rem. The element's line-height must be 2rem too (text-xl/8):
+     a bare text-* utility resets line-height and the text drifts off the lines. content-box origin
+     keeps the rules on the text lines whatever the padding; local attachment scrolls them with it. */
   .ruled-lines {
-    line-height: 32px;
+    line-height: 2rem;
     background-image: repeating-linear-gradient(
-      to bottom, transparent, transparent 31px, color-mix(in srgb, var(--color-phosphor-faint) 80%, transparent) 32px
+      to bottom, transparent, transparent calc(2rem - 1px), color-mix(in srgb, var(--color-phosphor-faint) 80%, transparent) 2rem
     );
+    background-origin: content-box;
     background-attachment: local;
+  }
+
+  /* the note pad's rich-text body (a contenteditable div; note_pad_controller.js) */
+  /* Neither font has a bold weight and the browser's fake bold is faint, so bold also gets
+     a thin outline and the brighter ink. Shared with the spreadsheet's cell formats below. */
+  .rich-text :is(b, strong),
+  .sheet-grid input[data-format*="b"] {
+    font-weight: 700;
+    color: var(--color-ink-bright);
+    -webkit-text-stroke: 0.04em currentColor;
+  }
+
+  .rich-text :is(i, em),
+  .sheet-grid input[data-format*="i"] { font-style: italic; }
+
+  .rich-text u { text-underline-offset: 3px; }
+
+  .sheet-grid input[data-format*="u"] { text-decoration-line: underline; text-underline-offset: 3px; }
+  .sheet-grid input[data-format*="s"] { text-decoration-line: line-through; }
+  .sheet-grid input[data-format*="u"][data-format*="s"] { text-decoration-line: underline line-through; }
+  .rich-text ul { list-style: disc; padding-left: 1.5em; }
+  .rich-text ol { list-style: decimal; padding-left: 1.5em; }
+
+  .rich-text[data-empty]::before {
+    content: attr(data-placeholder);
+    color: var(--color-ink-muted);
+    pointer-events: none;
+  }
+
+  /* gray keycap for the formatting toolbars: raised bevel, sunk while pressed or toggled on */
+  .btn-key {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-key);
+    color: var(--color-key-ink);
+    border: 1px solid;
+    border-color: var(--color-key-bright) var(--color-key-dim) var(--color-key-dim) var(--color-key-bright);
+    box-shadow: inset -2px -2px 0 rgba(0, 0, 0, 0.25), inset 2px 2px 0 rgba(255, 255, 255, 0.35);
+    text-shadow: none;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 80ms;
+  }
+
+  .btn-key:hover { background: var(--color-key-bright); }
+
+  .btn-key:focus-visible {
+    outline: 2px solid var(--color-phosphor);
+    outline-offset: 2px;
+  }
+
+  /* destructive keys (− ROW / − COL): dark red legend, 4.9:1 on key */
+  .btn-key-alert { color: var(--color-key-alert); }
+
+  .btn-key:active,
+  .btn-key[aria-pressed="true"] {
+    background: var(--color-key-dim);
+    color: var(--color-ink-bright);
+    border-color: var(--color-key-dim) var(--color-key-bright) var(--color-key-bright) var(--color-key-dim);
+    box-shadow: inset 2px 2px 0 rgba(0, 0, 0, 0.35);
   }
 
   /* DOS-styled replacement for the browser's confirm() */
@@ -297,6 +372,12 @@
   .sheet-grid td {
     border: 1px solid var(--color-phosphor-faint);
     padding: 0;
+  }
+
+  /* the selected range (the focused cell inside it keeps its own brighter look) */
+  .sheet-grid[data-multiple] td[data-selected] {
+    background: color-mix(in srgb, var(--color-phosphor) 12%, transparent);
+    box-shadow: inset 0 0 0 1px var(--color-phosphor-dim);
   }
 
   .sheet-grid input {

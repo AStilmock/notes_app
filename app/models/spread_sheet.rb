@@ -9,12 +9,17 @@ class SpreadSheet < ApplicationRecord
   COL_WIDTHS = 48..1_600
   ROW_HEIGHTS = 24..320
 
+  # per-cell formatting: a grid like cells, each entry a string of flags (nil / "" = plain):
+  # b bold, i italic, u underline, s strikethrough (spread_sheet_controller.js draws them)
+  FORMAT_FLAGS = "bius"
+
   belongs_to :user
 
   before_validation :fit_sizes_to_grid
 
   validate :cells_must_be_a_grid
   validate :sizes_must_be_in_range
+  validate :formats_must_be_flags
 
   def row_count = cells.size
   def col_count = cells.first&.size.to_i
@@ -37,6 +42,7 @@ class SpreadSheet < ApplicationRecord
 
     self.col_widths = col_widths.first(col_count) if col_widths.is_a?(Array)
     self.row_heights = row_heights.first(row_count) if row_heights.is_a?(Array)
+    self.formats = formats.first(row_count).map { |row| row.is_a?(Array) ? row.first(col_count) : row } if formats.is_a?(Array)
   end
 
   def sizes_must_be_in_range
@@ -46,5 +52,13 @@ class SpreadSheet < ApplicationRecord
 
       errors.add(attribute, "must be whole pixel sizes from #{range.min} to #{range.max}")
     end
+  end
+
+  def formats_must_be_flags
+    flags = /\A[#{FORMAT_FLAGS}]*\z/
+    valid = formats.is_a?(Array) && formats.all? do |row|
+      row.nil? || (row.is_a?(Array) && row.all? { |format| format.nil? || (format.is_a?(String) && format.match?(flags)) })
+    end
+    errors.add(:formats, "must be rows of format flags (#{FORMAT_FLAGS})") unless valid
   end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_04_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_20_120100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -43,6 +43,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_04_120000) do
     t.datetime "updated_at", null: false
     t.jsonb "col_widths", default: [], null: false
     t.jsonb "row_heights", default: [], null: false
+    t.jsonb "formats", default: [], null: false
     t.index ["user_id", "position"], name: "index_spread_sheets_on_user_id_and_position"
   end
 

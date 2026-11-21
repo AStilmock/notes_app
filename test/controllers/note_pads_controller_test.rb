@@ -64,4 +64,16 @@ class NotePadsControllerTest < ActionDispatch::IntegrationTest
     assert_response :unauthorized
     assert_equal "First pad", @note_pad.reload.title
   end
+
+  test "show renders the formatted body and the formatting keys" do
+    @note_pad.update!(body: "<b>bold</b><div>next line</div>")
+    get note_pad_url(@note_pad)
+    assert_select "[contenteditable][data-note-pad-target=body] b", "bold"
+    assert_select "[role=toolbar] button[data-note-pad-command-param]", 6
+  end
+
+  test "autosave cleans the body" do
+    patch note_pad_url(@note_pad), params: { note_pad: { body: %(<i>hi</i><img src=x onerror=alert(1)>) } }, as: :turbo_stream
+    assert_equal "<i>hi</i>", @note_pad.reload.body
+  end
 end

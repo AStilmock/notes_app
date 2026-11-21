@@ -21,12 +21,36 @@
                   px-4 py-4 border-b-2 border-phosphor-dim focus:outline-none focus:border-phosphor
                   placeholder-ink-muted" />
 
-    <textarea data-note-pad-target="body"
-              data-action="input->note-pad#scheduleSave"
-              placeholder="type here..."
-              aria-label="Body"
-              class="ruled-lines w-full bg-transparent text-ink text-xl px-4 py-1 min-h-[70vh]
-                     focus:outline-none placeholder-ink-muted resize-none"
-    ><%= @note_pad.body %></textarea>
+    <%# rich text, cleaned by NotePad on save and again here; text-xl/8 keeps the line height on the 32px rules %>
+    <div contenteditable="true" role="textbox" aria-multiline="true" aria-label="Body"
+         data-note-pad-target="body"
+         data-placeholder="type here..."
+         data-action="input->note-pad#scheduleSave keydown->note-pad#shortcut paste->note-pad#paste"
+         class="ruled-lines rich-text w-full text-ink text-xl/8 px-4 pt-1 pb-8 min-h-[70vh] focus:outline-none
+                break-words"
+    ><%= sanitize @note_pad.body, tags: NotePad::BODY_TAGS, attributes: [] %></div>
+
+    <%# formatting keys; each toggles on the selection (or on what you type next) %>
+    <div role="toolbar" aria-label="Formatting"
+         class="crt-sticky-bottom z-30 grid grid-cols-3 sm:grid-cols-6 gap-2 p-3 bg-screen border-t border-phosphor-dim">
+      <% [
+        { command: "bold", glyph: "B", label: "BOLD", style: "font-bold", keys: "Ctrl/⌘+B", toggle: true },
+        { command: "italic", glyph: "I", label: "ITALIC", style: "italic", keys: "Ctrl/⌘+I", toggle: true },
+        { command: "underline", glyph: "U", label: "UNDERLINE", style: "underline underline-offset-4", keys: "Ctrl/⌘+U", toggle: true },
+        { command: "strikeThrough", glyph: "S", label: "STRIKE", style: "line-through", keys: "Ctrl/⌘+Shift+X", toggle: true },
+        { command: "insertUnorderedList", glyph: "•", label: "LIST", style: "", keys: nil, toggle: true },
+        { command: "removeFormat", glyph: "⌫", label: "CLEAR", style: "", keys: nil, toggle: false }
+      ].each do |key| %>
+        <button type="button" class="btn-key flex-col min-h-16 px-2 leading-none"
+                data-note-pad-target="formatButton"
+                data-note-pad-command-param="<%= key[:command] %>"
+                data-action="mousedown->note-pad#keepSelection click->note-pad#format"
+                title="<%= [key[:label].capitalize, key[:keys]&.then { "(#{_1})" }].compact.join(" ") %>"
+                <%= tag.attributes("aria-pressed": ("false" if key[:toggle])) %>>
+          <span class="text-3xl <%= key[:style] %>" aria-hidden="true"><%= key[:glyph] %></span>
+          <span class="text-sm tracking-widest mt-1"><%= key[:label] %></span>
+        </button>
+      <% end %>
+    </div>
   </div>
 </div>

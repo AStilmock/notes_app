@@ -67,4 +67,27 @@ class SpreadSheetTest < ActiveSupport::TestCase
     assert_equal [ 200 ], sheet.col_widths
     assert_equal [ 40 ], sheet.row_heights
   end
+
+  test "formats are rows of b / i / u / s flags, or nil / blank for plain" do
+    sheet = spread_sheets(:one)
+
+    sheet.formats = [ [ "b", "ius" ], [ nil, "" ] ]
+    assert sheet.valid?
+
+    sheet.formats = [ [ "x" ] ]
+    assert_not sheet.valid?
+
+    sheet.formats = [ [ 1 ] ]
+    assert_not sheet.valid?
+
+    sheet.formats = "bold"
+    assert_not sheet.valid?
+  end
+
+  test "formats for rows and columns that no longer exist are dropped" do
+    sheet = spread_sheets(:one)
+    sheet.formats = [ [ "b", "i", "u" ], [ "s", "", "b" ], [ "b" ] ]
+    sheet.valid?
+    assert_equal [ [ "b", "i" ], [ "s", "" ] ], sheet.formats
+  end
 end

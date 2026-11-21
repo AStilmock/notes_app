@@ -78,4 +78,19 @@ class SpreadSheetsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
     assert SpreadSheet.exists?(other.id)
   end
+
+  test "autosave saves cell formats" do
+    patch spread_sheet_url(@sheet), params: { spread_sheet: { formats: [ [ "b", "" ], [ "", "us" ] ].to_json } }, as: :turbo_stream
+    assert_response :success
+    assert_equal [ [ "b", "" ], [ "", "us" ] ], @sheet.reload.formats
+
+    get spread_sheet_url(@sheet)
+    assert_select "[data-spread-sheet-formats-value=?]", %([["b",""],["","us"]])
+    assert_select "[role=toolbar] [data-spread-sheet-flag-param]", 4
+  end
+
+  test "autosave rejects unknown formats" do
+    patch spread_sheet_url(@sheet), params: { spread_sheet: { formats: [ [ "<script>" ] ].to_json } }, as: :turbo_stream
+    assert_response :unprocessable_entity
+  end
 end
