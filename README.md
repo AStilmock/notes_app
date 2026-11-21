@@ -1,24 +1,5 @@
-# README
+# notes_app
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+A personal notes and spreadsheet app styled like an old CRT terminal: pale blue glowing text on black glass inside a green frame, with a DOS menu bar (F1/F2 or Alt+letter shortcuts) and gray keycap toolbars. It's built with Rails 8.1, PostgreSQL, Hotwire (Turbo + Stimulus via importmap, no JS build step) and Tailwind v4. Each user has their own legal pads and spreadsheets. Users sign in with an email or an optional username. Both editors autosave as you type (no save button) and keep working offline as an installable PWA: edits made offline are queued in IndexedDB and synced when the connection returns. Notepads are rich text with bold, italic, underline, strikethrough and lists, and are cleaned to an allowlist of tags on the server. Spreadsheets support per-cell formatting, resizable rows and columns, multi-cell selection, and copy/paste that works with Excel and Google Sheets.
 
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+To run it you need Ruby 3.4.2 and PostgreSQL. Run `bundle install`, then `bin/rails db:prepare` to create and migrate the database, then `bin/dev`. That starts the Rails server and the Tailwind watcher at http://localhost:3000, where you can register an account. Run the tests with `bin/rails test`. In development, password-reset emails open in the browser instead of being sent.
