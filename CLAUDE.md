@@ -50,7 +50,9 @@ Run with `bin/dev` (Rails server + Tailwind watcher), tests with `bin/rails test
 - Clipboard: copy/cut put the selection on the clipboard as TSV (Excel / Google Sheets compatible); one cell with text highlighted
   copies just that text. Paste lands a block at the selection's top-left, growing the grid (up to the max); a single value pasted
   into a multi-cell selection fills it. Formats come along only when the pasted text is what this page last copied.
-- Cell formats: `formats` jsonb grid like `cells`, each a string of flags `b i u s` (`SpreadSheet::FORMAT_FLAGS`; nil/"" = plain),
+- Cell formats: `formats` jsonb grid like `cells`, each a string of flags `b i u s` (`SpreadSheet::FORMAT_FLAGS`; nil/"" = plain)
+  plus at most one alignment flag, `c` center or `r` right (`ALIGN_FLAGS`; none = left). Align keys (SVG line icons) sit after S;
+  CLEAR resets formats and alignment.
   trimmed to the grid and validated like the sizes. Whole-cell only. B / I / U / S / CLEAR keys after FIT, Ctrl/⌘+B/I/U,
   Ctrl/⌘+Shift+X. The JS sets `data-format` on the input; `.sheet-grid input[data-format*=…]` styles it.
 

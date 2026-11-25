@@ -93,4 +93,13 @@ class SpreadSheetsControllerTest < ActionDispatch::IntegrationTest
     patch spread_sheet_url(@sheet), params: { spread_sheet: { formats: [ [ "<script>" ] ].to_json } }, as: :turbo_stream
     assert_response :unprocessable_entity
   end
+
+  test "show has left / center / right alignment keys and saves alignment" do
+    get spread_sheet_url(@sheet)
+    assert_select "[role=toolbar] [data-spread-sheet-align-param]", 3
+
+    patch spread_sheet_url(@sheet), params: { spread_sheet: { formats: [ [ "c", "br" ] ].to_json } }, as: :turbo_stream
+    assert_response :success
+    assert_equal [ [ "c", "br" ] ], @sheet.reload.formats
+  end
 end

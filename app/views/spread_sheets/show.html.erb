@@ -60,9 +60,31 @@
           <span class="<%= key[:style] %>" aria-hidden="true"><%= key[:glyph] %></span>
         </button>
       <% end %>
+
+      <span class="w-px h-6 mx-2 bg-phosphor-dim" aria-hidden="true"></span>
+
+      <%# alignment: icons of text lines lined up left / centered / right %>
+      <% [
+        { align: "l", label: "Align left", lines: [ [ 2, 14 ], [ 2, 10 ], [ 2, 14 ], [ 2, 8 ] ] },
+        { align: "c", label: "Align center", lines: [ [ 1, 15 ], [ 4, 12 ], [ 1, 15 ], [ 5, 11 ] ] },
+        { align: "r", label: "Align right", lines: [ [ 2, 14 ], [ 6, 14 ], [ 2, 14 ], [ 8, 14 ] ] }
+      ].each do |key| %>
+        <button type="button" class="btn-key size-8"
+                data-spread-sheet-target="formatButton"
+                data-spread-sheet-align-param="<%= key[:align] %>"
+                data-action="mousedown->spread-sheet#keepFocus click->spread-sheet#align"
+                title="<%= key[:label] %>" aria-label="<%= key[:label] %>" aria-pressed="false">
+          <svg viewBox="0 0 16 16" class="size-4" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="square">
+            <% key[:lines].each_with_index do |(x1, x2), i| %>
+              <line x1="<%= x1 %>" x2="<%= x2 %>" y1="<%= 2 + i * 4 %>" y2="<%= 2 + i * 4 %>" />
+            <% end %>
+          </svg>
+        </button>
+      <% end %>
+
       <button type="button" class="btn-key h-8 px-2 text-base tracking-widest"
               data-action="mousedown->spread-sheet#keepFocus click->spread-sheet#clearFormat"
-              title="Clear formatting">CLEAR</button>
+              title="Clear formatting and alignment">CLEAR</button>
 
       <span class="ml-auto hidden xl:inline text-sm text-ink-dim font-sheet">
         SHIFT or drag to select · CTRL+C / V copy &amp; paste · drag a header edge to resize

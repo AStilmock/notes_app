@@ -10,8 +10,10 @@ class SpreadSheet < ApplicationRecord
   ROW_HEIGHTS = 24..320
 
   # per-cell formatting: a grid like cells, each entry a string of flags (nil / "" = plain):
-  # b bold, i italic, u underline, s strikethrough (spread_sheet_controller.js draws them)
+  # b bold, i italic, u underline, s strikethrough, plus at most one alignment, c center or r right
+  # (no alignment flag = left). spread_sheet_controller.js draws them.
   FORMAT_FLAGS = "bius"
+  ALIGN_FLAGS = "cr"
 
   belongs_to :user
 
@@ -55,10 +57,10 @@ class SpreadSheet < ApplicationRecord
   end
 
   def formats_must_be_flags
-    flags = /\A[#{FORMAT_FLAGS}]*\z/
+    flags = /\A[#{FORMAT_FLAGS}]*[#{ALIGN_FLAGS}]?[#{FORMAT_FLAGS}]*\z/
     valid = formats.is_a?(Array) && formats.all? do |row|
       row.nil? || (row.is_a?(Array) && row.all? { |format| format.nil? || (format.is_a?(String) && format.match?(flags)) })
     end
-    errors.add(:formats, "must be rows of format flags (#{FORMAT_FLAGS})") unless valid
+    errors.add(:formats, "must be rows of format flags (#{FORMAT_FLAGS}, and one of #{ALIGN_FLAGS})") unless valid
   end
 end

@@ -289,6 +289,8 @@
   .sheet-grid input[data-format*="u"] { text-decoration-line: underline; text-underline-offset: 3px; }
   .sheet-grid input[data-format*="s"] { text-decoration-line: line-through; }
   .sheet-grid input[data-format*="u"][data-format*="s"] { text-decoration-line: underline line-through; }
+  .sheet-grid input[data-format*="c"] { text-align: center; }
+  .sheet-grid input[data-format*="r"] { text-align: right; }
   .rich-text ul { list-style: disc; padding-left: 1.5em; }
   .rich-text ol { list-style: decimal; padding-left: 1.5em; }
 

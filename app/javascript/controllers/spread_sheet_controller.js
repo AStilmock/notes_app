@@ -7,7 +7,8 @@ const FIT_MIN_WIDTH = 64 // "fit" never shrinks a column below room to type in
 const CELL_PADDING_X = 18 // input's left + right padding, plus a little room for the caret
 
 // Editable grid of text cells. Keeps the grid in this.cells (an array of rows), each cell's
-// formatting in this.formats (same shape; a string of flags: b i u s), and the column widths /
+// formatting in this.formats (same shape; a string of flags: b i u s, and c / r to center or
+// right-align, none = left), and the column widths /
 // row heights in this.colWidths / this.rowHeights (px, null = default), draws it into the
 // <table> target, and autosaves everything (as JSON) on every change.
 //
@@ -142,6 +143,16 @@ export default class extends Controller {
     cells.forEach(({ row, col }) => {
       const flags = this.formats[row][col].replace(flag, "")
       this.#setFormat(row, col, on ? flags + flag : flags)
+    })
+    this.#updateToolbar()
+    this.scheduleSave()
+  }
+
+  // data-spread-sheet-align-param: l, c or r (left is the default, so it's stored as no flag)
+  align({ params: { align } }) {
+    this.#selectedCells().forEach(({ row, col }) => {
+      const flags = this.formats[row][col].replace(/[cr]/g, "")
+      this.#setFormat(row, col, align === "l" ? flags : flags + align)
     })
     this.#updateToolbar()
     this.scheduleSave()
@@ -497,14 +508,17 @@ export default class extends Controller {
     this.#updateToolbar()
   }
 
-  // a format button is pressed when every selected cell has that format
+  // a format / alignment button is pressed when every selected cell has that format / alignment
   #updateToolbar() {
     const cells = this.#selectedCells()
+    const formatOf = ({ row, col }) => this.formats[row]?.[col] ?? ""
     this.formatButtonTargets.forEach((button) => {
-      const flag = button.dataset.spreadSheetFlagParam
-      if (!flag) return
-      const on = cells.every(({ row, col }) => this.formats[row]?.[col]?.includes(flag))
-      button.setAttribute("aria-pressed", on)
+      const { spreadSheetFlagParam: flag, spreadSheetAlignParam: align } = button.dataset
+      if (flag) {
+        button.setAttribute("aria-pressed", cells.every((cell) => formatOf(cell).includes(flag)))
+      } else if (align) {
+        button.setAttribute("aria-pressed", cells.every((cell) => (formatOf(cell).match(/[cr]/)?.[0] ?? "l") === align))
+      }
     })
   }
 

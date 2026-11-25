@@ -90,4 +90,17 @@ class SpreadSheetTest < ActiveSupport::TestCase
     sheet.valid?
     assert_equal [ [ "b", "i" ], [ "s", "" ] ], sheet.formats
   end
+
+  test "formats may add one alignment: c center or r right" do
+    sheet = spread_sheets(:one)
+
+    sheet.formats = [ [ "c", "bur" ], [ "", "ic" ] ]
+    assert sheet.valid?
+
+    sheet.formats = [ [ "cr" ] ]
+    assert_not sheet.valid?
+
+    sheet.formats = [ [ "l" ] ]
+    assert_not sheet.valid?
+  end
 end
